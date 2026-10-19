@@ -1,0 +1,68 @@
+{
+  "lawnProgramValues": [
+    {
+      "displayName": "DLUX",
+      "productTypes": [
+        {
+          "displayname": "All Granular",
+          "value": "ALL_GRANULAR"
+        },
+        {
+          "displayname": "All Liquid",
+          "value": "ALL_LIQUID"
+        },
+        {
+          "displayname": "Liquid/Granular Mix",
+          "value": "LIQUID_GRANULAR_MIX"
+        }
+      ],
+      "value": "DLUX"
+    },
+    {
+      "displayName": "Legacy",
+      "productTypes": [
+        {
+          "displayname": "All Granular",
+          "value": "ALL_GRANULAR"
+        },
+        {
+          "displayname": "All Liquid",
+          "value": "ALL_LIQUID"
+        },
+        {
+          "displayname": "Liquid/Granular Mix",
+          "value": "LIQUID_GRANULAR_MIX"
+        }
+      ],
+      "value": "LEGACY"
+    },
+    {
+      "displayName": "NATTY",
+      "productTypes": [
+        {
+          "displayname": "All Granular",
+          "value": "ALL_GRANULAR"
+        },
+        {
+          "displayname": "Liquid/Granular Mix",
+          "value": "LIQUID_GRANULAR_MIX"
+        }
+      ],
+      "value": "NATURALS"
+    },
+    {
+      "displayName": "STILP",
+      "productTypes": [
+        {
+          "displayname": "All Granular",
+          "value": "ALL_GRANULAR"
+        },
+        {
+          "displayname": "Liquid/Granular Mix",
+          "value": "LIQUID_GRANULAR_MIX"
+        }
+      ],
+      "value": "STILP"
+    }
+  ]
+}

@@ -1,0 +1,328 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sign in to Yard Mastery",
+        "description": "Use the email and password of your Yard Mastery account. This is an unofficial integration.",
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Sign in to Yard Mastery again",
+        "description": "Yard Mastery no longer accepts the stored password for {email}. Enter the current password.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Yard Mastery rejected the email or password.",
+      "cannot_connect": "Could not reach Yard Mastery."
+    },
+    "abort": {
+      "already_configured": "This Yard Mastery account is already set up.",
+      "wrong_account": "You signed in with a different Yard Mastery account. Use the account this entry was set up with.",
+      "reauth_successful": "Re-authentication was successful."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Yard Mastery options",
+        "data": {
+          "allow_writes": "Allow changes to Yard Mastery",
+          "app_version": "App version to report",
+          "scan_interval": "Update interval (minutes)"
+        },
+        "data_description": {
+          "allow_writes": "When off, every action that would change your Yard Mastery data is refused.",
+          "app_version": "Yard Mastery rejects app versions it has retired. Set a newer version here if a repair tells you so.",
+          "scan_interval": "How often to check Yard Mastery, from 15 to 1440 minutes."
+        }
+      }
+    }
+  },
+  "issues": {
+    "app_version_invalid": {
+      "title": "Yard Mastery app version was retired",
+      "description": "Yard Mastery app version {version} was retired and the service may stop answering. Set a newer version under the integration's options."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "soil_temperature": {
+        "name": "Soil temperature"
+      },
+      "program": {
+        "name": "Program"
+      },
+      "current_window": {
+        "name": "Current window"
+      },
+      "current_window_progress": {
+        "name": "Current window progress"
+      },
+      "next_window": {
+        "name": "Next window"
+      },
+      "next_window_start": {
+        "name": "Next window start"
+      },
+      "days_until_next_window": {
+        "name": "Days until next window"
+      },
+      "last_application": {
+        "name": "Last application"
+      },
+      "last_journal_entry": {
+        "name": "Last journal entry"
+      },
+      "applications_this_year": {
+        "name": "Applications this year"
+      },
+      "nitrogen_this_year": {
+        "name": "Nitrogen this year"
+      },
+      "soil_test": {
+        "name": "Soil test"
+      },
+      "dug_ai_turns": {
+        "name": "Dug AI turns"
+      },
+      "last_sync": {
+        "name": "Last sync"
+      }
+    },
+    "binary_sensor": {
+      "treatment_due": {
+        "name": "Treatment due"
+      },
+      "app_version_valid": {
+        "name": "App version valid"
+      }
+    }
+  },
+  "services": {
+    "log_application": {
+      "name": "Log application",
+      "description": "Log products applied on a date in the Yard Mastery journal, merging with any entry already there. Without products, logs the window's items that are not done yet at their recommended amount for your lawn and marks them done (experimental).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Journal date. Defaults to today."
+        },
+        "products": {
+          "name": "Products",
+          "description": "List of {product, amount}: product name or id, and the total amount you spread over the lawn (as the app records it). Without amount, the recommended rate times your lawn size is used."
+        },
+        "window": {
+          "name": "Window",
+          "description": "Window whose open items are logged when no products are given: current (default), next, a window name or its start date."
+        },
+        "areas": {
+          "name": "Areas",
+          "description": "Lawn areas (segment names) to record on the entry."
+        },
+        "notes": {
+          "name": "Notes",
+          "description": "Text appended to the entry's notes."
+        },
+        "soil_temp": {
+          "name": "Soil temperature",
+          "description": "Overrides today's ZIP-code soil temperature."
+        }
+      }
+    },
+    "set_item_status": {
+      "name": "Set program item status",
+      "description": "Mark program items done, skipped or not done.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "status": {
+          "name": "Status",
+          "description": "New status of the items."
+        },
+        "items": {
+          "name": "Item IDs",
+          "description": "Program item ids (any window). Not combined with products or window."
+        },
+        "products": {
+          "name": "Products",
+          "description": "Product names of items in the window."
+        },
+        "window": {
+          "name": "Window",
+          "description": "current (default), next, a window name or its start date (YYYY-MM-DD)."
+        }
+      }
+    },
+    "log_activity": {
+      "name": "Log activity",
+      "description": "Add activities to the Yard Mastery journal entry for a date.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Journal date. Defaults to today."
+        },
+        "activities": {
+          "name": "Activities",
+          "description": "What was done."
+        },
+        "areas": {
+          "name": "Areas",
+          "description": "Lawn areas (segment names) to record on the entry."
+        },
+        "notes": {
+          "name": "Notes",
+          "description": "Text appended to the entry's notes."
+        }
+      }
+    },
+    "add_photo": {
+      "name": "Add photo",
+      "description": "Attach a photo to the journal entry for a date, from a camera or image entity, or from a file under /config or /media that is in allowlist_external_dirs.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Journal date. Defaults to today."
+        },
+        "file": {
+          "name": "File",
+          "description": "Path of a JPEG under /config or /media. The folder must also be in Home Assistant's allowlist_external_dirs (by default /config/www and the media folders)."
+        },
+        "entity_id": {
+          "name": "Camera or image",
+          "description": "Take the photo from this camera or image entity instead of a file."
+        }
+      }
+    },
+    "delete_journal_entry": {
+      "name": "Delete journal entry",
+      "description": "Delete the Yard Mastery journal entry for a date, or by id. Give one of the two.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Delete the entry for this date."
+        },
+        "entry_id": {
+          "name": "Entry ID",
+          "description": "Delete this entry instead of the one for a date."
+        }
+      }
+    },
+    "create_reminder": {
+      "name": "Create reminder",
+      "description": "Create a Yard Mastery reminder.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Due date."
+        },
+        "title": {
+          "name": "Title",
+          "description": "Reminder text."
+        }
+      }
+    },
+    "update_reminder": {
+      "name": "Update reminder",
+      "description": "Change a Yard Mastery reminder's date or text.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "reminder_id": {
+          "name": "Reminder ID",
+          "description": "The reminder's id (shown in the calendar event)."
+        },
+        "date": {
+          "name": "Date",
+          "description": "New due date."
+        },
+        "title": {
+          "name": "Title",
+          "description": "New reminder text."
+        }
+      }
+    },
+    "dismiss_reminder": {
+      "name": "Dismiss reminder",
+      "description": "Dismiss a Yard Mastery reminder. This cannot be undone.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        },
+        "reminder_id": {
+          "name": "Reminder ID",
+          "description": "The reminder's id (shown in the calendar event)."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Refresh",
+      "description": "Fetch everything from Yard Mastery now. Works with changes turned off.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        }
+      }
+    },
+    "import_history": {
+      "name": "Import history",
+      "description": "Fetch every past year's calendar, journal and windows. Works with changes turned off.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The Yard Mastery entry to use. Only needed when several accounts are set up."
+        }
+      }
+    }
+  },
+  "selector": {
+    "item_status": {
+      "options": {
+        "done": "Done",
+        "skipped": "Skipped",
+        "not_done": "Not done"
+      }
+    },
+    "activity": {
+      "options": {
+        "mow": "Mow",
+        "edge": "Edge",
+        "aerate": "Aerate",
+        "dethatch": "Dethatch",
+        "blow": "Blow",
+        "trim": "Trim"
+      }
+    }
+  }
+}

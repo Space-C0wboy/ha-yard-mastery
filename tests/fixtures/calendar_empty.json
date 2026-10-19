@@ -1,0 +1,7 @@
+{
+  "links": {
+    "nextPage": "v1/calendar/search?startDate=2026-01-01&endDate=2026-12-31&viewType=YEAR&includeBundles=true&includeJournalEntries=true&includeReminders=true",
+    "previousPage": "v1/calendar/search?startDate=2024-01-01&endDate=2024-12-31&viewType=YEAR&includeBundles=true&includeJournalEntries=true&includeReminders=true"
+  },
+  "years": []
+}

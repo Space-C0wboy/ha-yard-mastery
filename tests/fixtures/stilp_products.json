@@ -1,0 +1,181 @@
+{
+  "barcode": "YM00001",
+  "lawnSqrFt": 893,
+  "products": [
+    {
+      "applicationNumber": 1,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 147,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Flagship",
+        "nitrogen": 24,
+        "phosphorus": 0,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 4872255832116,
+        "youtubeId": "wot6FA2EZxU"
+      }
+    },
+    {
+      "applicationNumber": 2,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 147,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Flagship",
+        "nitrogen": 24,
+        "phosphorus": 0,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 4872255832116,
+        "youtubeId": "wot6FA2EZxU"
+      }
+    },
+    {
+      "applicationNumber": 3,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 158,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFreedom_BothBags.jpg?v=1689092317",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Freedom",
+        "nitrogen": 17,
+        "phosphorus": 7,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 6551459397684
+      }
+    },
+    {
+      "applicationNumber": 4,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 147,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Flagship",
+        "nitrogen": 24,
+        "phosphorus": 0,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 4872255832116,
+        "youtubeId": "wot6FA2EZxU"
+      }
+    },
+    {
+      "applicationNumber": 5,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 158,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFreedom_BothBags.jpg?v=1689092317",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Freedom",
+        "nitrogen": 17,
+        "phosphorus": 7,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 6551459397684
+      }
+    },
+    {
+      "applicationNumber": 6,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 147,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Flagship",
+        "nitrogen": 24,
+        "phosphorus": 0,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 4872255832116,
+        "youtubeId": "wot6FA2EZxU"
+      }
+    },
+    {
+      "applicationNumber": 7,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 148,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMStressBlend_BothBags.jpg?v=1664543633",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Stress Blend",
+        "nitrogen": 7,
+        "phosphorus": 0,
+        "potassium": 20,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 4872255864884
+      }
+    },
+    {
+      "applicationNumber": 8,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 147,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Flagship",
+        "nitrogen": 24,
+        "phosphorus": 0,
+        "potassium": 6,
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "shopifyId": 4872255832116,
+        "youtubeId": "wot6FA2EZxU"
+      }
+    }
+  ],
+  "soilTestDate": "2026-09-30",
+  "soilTestDescription": "Overall Sample"
+}

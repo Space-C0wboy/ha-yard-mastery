@@ -1,0 +1,19 @@
+{
+  "app": {
+    "version": "4.00.05"
+  },
+  "dugAi": {
+    "turnsLimit": 40,
+    "turnsResetAt": "2026-11-01T00:00:00",
+    "turnsUsed": 0
+  },
+  "dugAiPhotos": true,
+  "dugAiRolloutPercent": 0,
+  "program": {
+    "program": "STILP"
+  },
+  "user": {
+    "guid": "user-guid-1",
+    "type": "USER"
+  }
+}

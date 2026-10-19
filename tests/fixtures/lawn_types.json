@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "imageUrl": null,
+    "name": "Cool Season"
+  },
+  {
+    "id": 2,
+    "imageUrl": null,
+    "name": "Warm Season"
+  },
+  {
+    "id": 3,
+    "imageUrl": null,
+    "name": "Unknown"
+  }
+]

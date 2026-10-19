@@ -1,0 +1,581 @@
+{
+  "links": {
+    "nextPage": "v1/calendar/search?startDate=2027-01-01&endDate=2027-12-31&viewType=YEAR&includeBundles=true&includeJournalEntries=true&includeReminders=true",
+    "previousPage": "v1/calendar/search?startDate=2025-01-01&endDate=2025-12-31&viewType=YEAR&includeBundles=true&includeJournalEntries=true&includeReminders=true"
+  },
+  "years": [
+    {
+      "blackout": null,
+      "days": [
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Flagship Fertilizer with nitrogen + chelated iron will push your lawn out of winter slumber and bring maximum green.",
+                "displayOrder": 1,
+                "id": 29353197,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "Prodiamine Pre-Emergent prevents grassy weeds like crabgrass and foxtail. Ok to apply same day as Flagship (separate application)",
+                "displayOrder": 2,
+                "id": 29353198,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 16,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/YM_2Bags_Prodiamine-_WebSquare.jpg?v=1779225393",
+                  "name": "Prodiamine"
+                },
+                "productType": {
+                  "id": 7,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Pre-Emergent"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "All new bio-stimulant that replaces Air8 and RGS. Apply anytime to loosen soil and encourage turf rooting. Also contains a penetrating surfactant.",
+                "displayOrder": 3,
+                "id": 29353196,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 575,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_CompactionCure_MAINimage_quart_gal.jpg?v=1742329746",
+                  "name": "Compaction Cure"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "CREATED"
+              }
+            ],
+            "description": "Soil temperatures are on the rise - our Growth Pack + Pre recommendations are designed to pull the lawn out of winter slumber and get it greened up while also preventing weeds like crabgrass that will be a problem down the road. A new (improved) bio-stimulant package is also included.",
+            "endDate": "2026-03-21",
+            "id": 12211687,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+            "name": "STILP Application - Flagship Pack",
+            "startDate": "2026-02-08",
+            "youtubeId": null
+          },
+          "date": "2026-02-08",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Fertilizer with high potassium + magnesium, micronutrients and BioNite\u2122 natural additive.",
+                "displayOrder": 1,
+                "id": 29353231,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 148,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMStressBlend_BothBags.jpg?v=1664543633",
+                  "name": "Stress Blend"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "Granular pre-emergent to stop crabgrass through summer. Ok to apply same day as Stress Blend (separate application)",
+                "displayOrder": 2,
+                "id": 29353232,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 16,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/YM_2Bags_Prodiamine-_WebSquare.jpg?v=1779225393",
+                  "name": "Prodiamine"
+                },
+                "productType": {
+                  "id": 7,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Pre-Emergent"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "All new bio-stimulant that replaces Air8 and RGS. Apply anytime to loosen soil and encourage turf rooting. Also contains a penetrating surfactant.",
+                "displayOrder": 3,
+                "id": 29353230,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 575,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_CompactionCure_MAINimage_quart_gal.jpg?v=1742329746",
+                  "name": "Compaction Cure"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "CREATED"
+              }
+            ],
+            "description": "Soil temps are rising and your lawn and soil are beginning to move. Our Stress Response Pack assists with high potassium and magnesium fertilizer (electrolytes) along with prodiamine pre-emergent protection (for crabgrass/signalgrass) and bio-stimulants for soil health. The foundation for a successful season!",
+            "endDate": "2026-05-01",
+            "id": 12211701,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMStressBlend_BothBags.jpg?v=1664543633",
+            "name": "STILP Application - Stress Blend Pack",
+            "startDate": "2026-03-23",
+            "youtubeId": null
+          },
+          "date": "2026-03-23",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Warm season turf loves longer days - Flagship will fuel it with nitrogen + iron + micronutrients manganese and zinc.",
+                "displayOrder": 1,
+                "id": 29353235,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "Light nitrogen + iron + biostimulants (humic, fulvic, kelp) for a boost of color without surge growth. Apply anytime.",
+                "displayOrder": 2,
+                "id": 29353234,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 164,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_SpoonJuice_MAINimage_quart_gal_4ce1caf8-9762-4bb3-9caf-ddee25b2637e.jpg?v=1780507121",
+                  "name": "Spoon Juice"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "Moisture manager to retain water that could be lost to evaporation. Water it in immediately after app.",
+                "displayOrder": 3,
+                "id": 29353233,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 580,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/moisture-max-lawn-moisture-manager.jpg?v=1748869949",
+                  "name": "Moisture Max"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "CREATED"
+              }
+            ],
+            "description": "Thick, dark green turf is the goal. Long days and sunlight encourage healthy growth and color and the Ultimate Green Pack + Hydration is prescribed with nitrogen + iron fertilizer (dark green), a bio-stimulant with humic and sea kelp (deeper rooting) and a hydration product for moisture management.",
+            "endDate": "2026-06-12",
+            "id": 12211702,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+            "name": "STILP Application - Flagship Pack + Hydration",
+            "startDate": "2026-05-02",
+            "youtubeId": null
+          },
+          "date": "2026-05-02",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Flagship is perfect this time of year - apply on hot days, no burn, just measured green color and healthy growth.",
+                "displayOrder": 1,
+                "id": 29353237,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "Perfect anytime you want a deeper green color boost without surging growth. Use hose end or backpack sprayer.",
+                "displayOrder": 2,
+                "id": 29353236,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 164,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_SpoonJuice_MAINimage_quart_gal_4ce1caf8-9762-4bb3-9caf-ddee25b2637e.jpg?v=1780507121",
+                  "name": "Spoon Juice"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "CREATED"
+              }
+            ],
+            "description": "The Ultimate Green Pack is excellent for the long days of summer which are ideal for warm season turf growth and vigor. We are fueling the lawn's natural growth by encouraging rhizomes and stolons (runners) as well as deeper rooting. You'll also get a super dark green color pop from both the fertilizer and bio-stimulant in this bundle of recommendations.",
+            "endDate": "2026-07-24",
+            "id": 12211703,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+            "name": "STILP Application - Flagship Pack",
+            "startDate": "2026-06-13",
+            "youtubeId": null
+          },
+          "date": "2026-06-13",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Delivers a nice feeding of nitrogen + iron with 50% slow release nitrogen perfect for summer turf color and vigor.",
+                "displayOrder": 1,
+                "id": 29353239,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "CREATED"
+              },
+              {
+                "defaultName": null,
+                "description": "Apply anytime you want to see a deeper shade of green. Also contains bio-stimulants humic, fulvic and kelp.",
+                "displayOrder": 2,
+                "id": 29353238,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 164,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_SpoonJuice_MAINimage_quart_gal_4ce1caf8-9762-4bb3-9caf-ddee25b2637e.jpg?v=1780507121",
+                  "name": "Spoon Juice"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "CREATED"
+              }
+            ],
+            "description": "Let's continue to take advantage of the long days of sunlight. Warm season turf loves sunlight! Our recommendatins here will fuel the lawn's natural growth by encouraging rhizomes and stolons as well as deeper rooting. Nitrogen + Iron fertilizer turn the lawn a nice dark color, and bio-stimulants fortify soil health.",
+            "endDate": "2026-09-04",
+            "id": 12211704,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+            "name": "STILP Application - Flagship Pack",
+            "startDate": "2026-07-25",
+            "youtubeId": null
+          },
+          "date": "2026-07-25",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Flagship contains nitrogen and iron for lush greening plus potassium, manganese and zinc. It's perfectly fine to apply this in summer because all of your recommendations are based on your soil test results indicating actual needs. Get it down and water it in, good to go!",
+                "displayOrder": 1,
+                "id": 30869935,
+                "journalEntryDate": "2026-10-08",
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "COMPLETED"
+              },
+              {
+                "defaultName": null,
+                "description": "The ultimate summer bio-stimulant with a whiff of N and Fe for greening PLUS humic and kelp biostimulants to aid in heat stress. Apply anytime, on the same day as your fertilizer or separately or both! Have fun with this one!",
+                "displayOrder": 2,
+                "id": 30869934,
+                "journalEntryDate": "2026-10-08",
+                "product": {
+                  "id": 164,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_SpoonJuice_MAINimage_quart_gal_4ce1caf8-9762-4bb3-9caf-ddee25b2637e.jpg?v=1780507121",
+                  "name": "Spoon Juice"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "COMPLETED"
+              }
+            ],
+            "description": "The lawn is still sufficiently growing which means another application of fertilizer from your custom plan is in order! It's also recommended to keep the bio-stimulants (humic and kelp) flowing as the lawn can still capitalize on the warmth and long days.",
+            "endDate": "2026-10-16",
+            "id": 12848537,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+            "name": "STILP Application - Flagship Pack",
+            "startDate": "2026-09-05",
+            "youtubeId": "PilmPi_4Z7g"
+          },
+          "date": "2026-09-05",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": null,
+          "date": "2026-10-08",
+          "journalEntry": {
+            "activities": [],
+            "attachments": [
+              {
+                "hostedUrl": "https://example.invalid/photo.jpg",
+                "id": 233595,
+                "reference": "photo.jpg"
+              }
+            ],
+            "body": null,
+            "entryDate": "2026-10-08",
+            "id": 1548551,
+            "lawnSegments": null,
+            "name": null,
+            "productApplications": [
+              {
+                "appliedRate": 13.4,
+                "bundleItemIds": [
+                  30869934
+                ],
+                "product": {
+                  "id": 164,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_SpoonJuice_MAINimage_quart_gal_4ce1caf8-9762-4bb3-9caf-ddee25b2637e.jpg?v=1780507121",
+                  "name": "Spoon Juice"
+                }
+              },
+              {
+                "appliedRate": 2.68,
+                "bundleItemIds": [
+                  30869935
+                ],
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                }
+              }
+            ],
+            "tempUnit": "F",
+            "tempValue": 79.0
+          },
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "Flagship contains nitrogen and iron for lush greening plus potassium, manganese and zinc. Fall time is perfect to the max green from Flagship. Get it watered in with 1/4\" of irrigation or rainfall. ",
+                "displayOrder": 1,
+                "id": 30869937,
+                "journalEntryDate": "2026-10-19",
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                },
+                "productType": {
+                  "id": 4,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+                  "name": "Lawn Fertilizer"
+                },
+                "status": "COMPLETED"
+              },
+              {
+                "defaultName": null,
+                "description": "Pre-emergent to stop fall weeds like annual bluegrass, bittercress, henbit and chickweed. Very important for warm season lawns because weeds grow all winter while the lawn goes dormant. This is giving your some defense.",
+                "displayOrder": 2,
+                "id": 30869938,
+                "journalEntryDate": "2026-10-19",
+                "product": {
+                  "id": 16,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/YM_2Bags_Prodiamine-_WebSquare.jpg?v=1779225393",
+                  "name": "Prodiamine"
+                },
+                "productType": {
+                  "id": 7,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Pre-Emergent"
+                },
+                "status": "COMPLETED"
+              },
+              {
+                "defaultName": null,
+                "description": "Compaction Cure is the ultimate fall \"aeration\" product that contains humic, fulvic and kelp PLUS a wetting agent. Apply when soil moisture is present and water it in when done. Ok to apply on top of your fertilizer and prodiamine and water them all in together with 1/4\".",
+                "displayOrder": 3,
+                "id": 30869936,
+                "journalEntryDate": "2026-10-19",
+                "product": {
+                  "id": 575,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_CompactionCure_MAINimage_quart_gal.jpg?v=1742329746",
+                  "name": "Compaction Cure"
+                },
+                "productType": {
+                  "id": 1,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Bio-Stimulant"
+                },
+                "status": "COMPLETED"
+              }
+            ],
+            "description": "Soil temps are dropping and that means it's time to prevent winter weeds like poa annu (annual bluegrass) hairy bittercress, henbit, chickweed and many many more. We also recommend continued feeding of the turf based on your soil test data on file.",
+            "endDate": "2026-11-18",
+            "id": 12848538,
+            "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+            "name": "STILP Application - Flagship Pack",
+            "startDate": "2026-10-17",
+            "youtubeId": null
+          },
+          "date": "2026-10-17",
+          "journalEntry": null,
+          "reminders": []
+        },
+        {
+          "bundle": null,
+          "date": "2026-10-19",
+          "journalEntry": {
+            "activities": [],
+            "attachments": [],
+            "body": null,
+            "entryDate": "2026-10-19",
+            "id": 1552252,
+            "lawnSegments": null,
+            "name": null,
+            "productApplications": [
+              {
+                "appliedRate": 9.0,
+                "bundleItemIds": [
+                  30869936
+                ],
+                "product": {
+                  "id": 575,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_CompactionCure_MAINimage_quart_gal.jpg?v=1742329746",
+                  "name": "Compaction Cure"
+                }
+              },
+              {
+                "appliedRate": 2.9,
+                "bundleItemIds": [
+                  30869938
+                ],
+                "product": {
+                  "id": 16,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/YM_2Bags_Prodiamine-_WebSquare.jpg?v=1779225393",
+                  "name": "Prodiamine"
+                }
+              },
+              {
+                "appliedRate": 2.8,
+                "bundleItemIds": [
+                  30869937
+                ],
+                "product": {
+                  "id": 147,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+                  "name": "Flagship"
+                }
+              }
+            ],
+            "tempUnit": "F",
+            "tempValue": 62.0
+          },
+          "reminders": []
+        },
+        {
+          "bundle": {
+            "bundleItems": [
+              {
+                "defaultName": null,
+                "description": "You're in luck, you have time for a final application of pre-emergent to stop winter weeds like annual bluegrass! For this one you will be using Dimension pre-emergent. Water it in when done.",
+                "displayOrder": 1,
+                "id": 30869939,
+                "journalEntryDate": null,
+                "product": {
+                  "id": 17,
+                  "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_Dimension18_45bags_WebImage.jpg?v=1738856754",
+                  "name": "Dimension"
+                },
+                "productType": {
+                  "id": 7,
+                  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+                  "name": "Pre-Emergent"
+                },
+                "status": "CREATED"
+              }
+            ],
+            "description": "It's time for your final pre-emergent application of the season to stop winter weeds into the early spring next year.",
+            "endDate": "2026-12-19",
+            "id": 12848539,
+            "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-images/dimension_45bags.png",
+            "name": "STILP Application Pack",
+            "startDate": "2026-11-19",
+            "youtubeId": null
+          },
+          "date": "2026-11-19",
+          "journalEntry": null,
+          "reminders": []
+        }
+      ],
+      "year": 2026
+    }
+  ]
+}

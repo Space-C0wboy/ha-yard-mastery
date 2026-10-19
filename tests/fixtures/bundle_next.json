@@ -1,0 +1,57 @@
+{
+  "blackoutTreatment": "NONE",
+  "bundleItems": [
+    {
+      "completed": false,
+      "defaultName": null,
+      "description": "You're in luck, you have time for a final application of pre-emergent to stop winter weeds like annual bluegrass! For this one you will be using Dimension pre-emergent. Water it in when done.",
+      "displayOrder": 1,
+      "id": 30869939,
+      "journalEntryDate": null,
+      "product": {
+        "applicationRate": 3.0,
+        "coverageSqFt": 1000,
+        "id": 17,
+        "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_Dimension18_45bags_WebImage.jpg?v=1738856754",
+        "materialType": "Granular",
+        "measure": "POUNDS",
+        "name": "Dimension",
+        "nitrogen": 0,
+        "phosphorus": 0,
+        "potassium": 7,
+        "productType": {
+          "id": 7,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+          "name": "Pre-Emergent"
+        },
+        "shopifyId": 7732599521332,
+        "taxonomies": [
+          {
+            "description": "Weed Control Category",
+            "id": 9,
+            "name": "Weed Control",
+            "parentId": 1,
+            "searchMethod": null,
+            "type": "CATEGORY"
+          }
+        ]
+      },
+      "productType": {
+        "id": 7,
+        "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+        "name": "Pre-Emergent"
+      },
+      "status": "CREATED"
+    }
+  ],
+  "description": "It's time for your final pre-emergent application of the season to stop winter weeds into the early spring next year.",
+  "endDate": "2026-12-19",
+  "id": 12848539,
+  "imageCarousel": [
+    "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_Dimension18_45bags_WebImage.jpg?v=1738856754"
+  ],
+  "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-images/dimension_45bags.png",
+  "name": "STILP Application Pack",
+  "startDate": "2026-11-19",
+  "youtubeId": null
+}

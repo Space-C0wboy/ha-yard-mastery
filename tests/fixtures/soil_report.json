@@ -1,0 +1,395 @@
+{
+  "barcode": "YM00001",
+  "canInformLawnProgram": true,
+  "description": "Overall Sample",
+  "doesInformLawnProgram": true,
+  "hasRecommendations": true,
+  "recommendedProducts": [],
+  "report": {
+    "crop": {
+      "crop_id": 103,
+      "crop_name": "Lawn & Turf"
+    },
+    "farm": {
+      "farm_id": 0,
+      "farm_name": "default"
+    },
+    "field": {
+      "field_id": 0,
+      "field_name": "default"
+    },
+    "field_date": "2026-10-06T17:55:57.88",
+    "grower": {
+      "grower_id": 0,
+      "grower_name": "Test User"
+    },
+    "growth": null,
+    "lab_date": "2026-10-06T11:23:27.973",
+    "results": {
+      "barcode_prefix": "YM",
+      "ppm": {
+        "available_ranges": [
+          {
+            "high": 4.0,
+            "low": 1.0,
+            "nutrient_abbr": "al"
+          },
+          {
+            "high": 0.66,
+            "low": 0.22,
+            "nutrient_abbr": "b"
+          },
+          {
+            "high": 314.0,
+            "low": 93.0,
+            "nutrient_abbr": "ca"
+          },
+          {
+            "high": 0.28,
+            "low": 0.07,
+            "nutrient_abbr": "cu"
+          },
+          {
+            "high": 11.0,
+            "low": 4.0,
+            "nutrient_abbr": "fe"
+          },
+          {
+            "high": 72.0,
+            "low": 38.0,
+            "nutrient_abbr": "k"
+          },
+          {
+            "high": 67.0,
+            "low": 28.0,
+            "nutrient_abbr": "mg"
+          },
+          {
+            "high": 12.0,
+            "low": 4.0,
+            "nutrient_abbr": "mn"
+          },
+          {
+            "high": 18.0,
+            "low": 7.0,
+            "nutrient_abbr": "n"
+          },
+          {
+            "high": 30.0,
+            "low": 0.5,
+            "nutrient_abbr": "na"
+          },
+          {
+            "high": 11.0,
+            "low": 5.0,
+            "nutrient_abbr": "p"
+          },
+          {
+            "high": 7.0,
+            "low": 5.8,
+            "nutrient_abbr": "ph"
+          },
+          {
+            "high": 16.0,
+            "low": 7.0,
+            "nutrient_abbr": "s"
+          },
+          {
+            "high": 0.25,
+            "low": 0.1,
+            "nutrient_abbr": "zn"
+          }
+        ],
+        "samples": [
+          {
+            "density_score": 54.0,
+            "depth": "0-8in",
+            "micro_ind": 0,
+            "optimal_ind": false,
+            "ph_ind": 2,
+            "recommendation": {
+              "display_header": {
+                "message": "",
+                "note": ""
+              },
+              "display_message": {
+                "message": "Apply the recommended product at rate every 4-6 weeks while turf is actively growing.",
+                "note": "<ul><li>Select either the Organic or Synthetic product recommendation, depending on your growing philosophy.</li>\r\n <li>The recommended product, or something similar, needs to be <b>applied every 4-6 weeks</b> while turf is actively growing.</li>\r\n <li>You can add your application date(s) into the <a  class='nav-link-blue' href='calendar'>MySoil Calendar</a>, and it will alert you when your next application is needed.</li>\r\n <li>Healthy lawns should be mowed at least 2x per week.</li>\r\n <li>If only needing to mow once every 7-9 days because of slow growth, this is a good indicator that another fertilizer application is needed.</li></ul>"
+              },
+              "micronutrient_hotlink": "https://yardmastery.com/collections/fertilizers-liquid/products/0-0-2-microgreene-liquid-fertilizer",
+              "micronutrient_message": {
+                "message": "Micronutrient applications should be beneficial.",
+                "note": "<ul><li>Micronutrients are important for plant growth, but these should only be applied once N-P-K levels and pH have been addressed.</li>\r\n <li>Micronutrient only products are difficult to find, so we have matched you with the best consumer available option.</li>\r\n <li>Many Fertilizer products will contain some level of micronutrients in them, so you may be applying them with your N-P-K fertilizer, which saves time and money.</li></ul>"
+              },
+              "products": [
+                {
+                  "application": [
+                    {
+                      "profile_name": "18-0-1",
+                      "unit_name": "oz",
+                      "volume": 3.25
+                    },
+                    {
+                      "profile_name": "0-0-25",
+                      "unit_name": "oz",
+                      "volume": 4.0
+                    }
+                  ],
+                  "area_size": 1000,
+                  "display_header": "",
+                  "display_text": "Greene Punch (18-0-1) & GreeneKick (0-0-25)",
+                  "formulation_name": "Liquid",
+                  "hot_link": "https://yardmastery.com/search?q=0-0-25+GreeneKick+OR+GreenePunch",
+                  "product_id": 462,
+                  "product_name": "GreenePunch (18-0-1) & GreeneKick (0-0-25)",
+                  "profile_name": "18-0-26"
+                },
+                {
+                  "application": [
+                    {
+                      "profile_name": "24-0-6",
+                      "unit_name": "lbs",
+                      "volume": 2.5
+                    }
+                  ],
+                  "area_size": 1000,
+                  "display_header": "",
+                  "display_text": "Flagship (24-0-6)",
+                  "formulation_name": "Granular",
+                  "hot_link": "https://yardmastery.com/collections/fertilizers-granular/products/24-0-6-flagship-granular-lawn-fertilizer-with-iron",
+                  "product_id": 177,
+                  "product_name": "Flagship (24-0-6)",
+                  "profile_name": "24-0-6",
+                  "program_id": 3
+                }
+              ],
+              "rule_id": 11
+            },
+            "sample_name": "crop 103",
+            "sample_nutrients": [
+              {
+                "color_code": "red",
+                "nutrient_abbr": "b",
+                "ration": 0.18,
+                "value": 0.04
+              },
+              {
+                "color_code": "blue",
+                "nutrient_abbr": "ca",
+                "ration": 3.0,
+                "value": 654.36
+              },
+              {
+                "color_code": "green",
+                "nutrient_abbr": "cu",
+                "ration": 1.19,
+                "value": 0.11
+              },
+              {
+                "color_code": "blue",
+                "nutrient_abbr": "fe",
+                "ration": 2.05,
+                "value": 11.52
+              },
+              {
+                "color_code": "red",
+                "nutrient_abbr": "k",
+                "ration": 0.89,
+                "value": 33.88
+              },
+              {
+                "color_code": "blue",
+                "nutrient_abbr": "mg",
+                "ration": 2.68,
+                "value": 112.8
+              },
+              {
+                "color_code": "blue",
+                "nutrient_abbr": "mn",
+                "ration": 3.0,
+                "value": 44.58
+              },
+              {
+                "color_code": "red",
+                "nutrient_abbr": "n",
+                "ration": 0.92,
+                "value": 6.47
+              },
+              {
+                "color_code": "green",
+                "nutrient_abbr": "na",
+                "ration": 1.04,
+                "value": 1.82
+              },
+              {
+                "color_code": "green",
+                "nutrient_abbr": "nh4-n",
+                "value": 5.96
+              },
+              {
+                "color_code": "green",
+                "nutrient_abbr": "no3-n",
+                "value": 0.51
+              },
+              {
+                "color_code": "blue",
+                "nutrient_abbr": "p",
+                "ration": 3.0,
+                "value": 26.67
+              },
+              {
+                "color_code": "green",
+                "nutrient_abbr": "ph",
+                "ration": 1.49,
+                "value": 6.39
+              },
+              {
+                "color_code": "red",
+                "nutrient_abbr": "s",
+                "ration": 0.9,
+                "value": 6.29
+              },
+              {
+                "color_code": "blue",
+                "nutrient_abbr": "zn",
+                "ration": 3.0,
+                "value": 1.03
+              }
+            ]
+          }
+        ]
+      },
+      "retailer": {
+        "barcode_prefix": "YM",
+        "image_url": "Yardmastery_19-10-2021_smallYM.svg",
+        "one_button": false,
+        "one_button_name": null,
+        "retailer_id": 2,
+        "retailer_name": "Yardmastery",
+        "show_lbs": false,
+        "template_code": "YM"
+      },
+      "sample_set_id": "0"
+    },
+    "retailer": {
+      "barcode_prefix": "YM",
+      "image_url": "Yardmastery_19-10-2021_smallYM.svg",
+      "one_button": false,
+      "one_button_name": null,
+      "retailer_id": 2,
+      "retailer_name": "Yardmastery",
+      "show_lbs": false,
+      "template_code": "YM"
+    },
+    "sample_set_id": 0,
+    "sample_set_system_id": 0,
+    "samples": [
+      {
+        "barcode": "YM00001",
+        "id": 314283,
+        "lab_number": "LAB0001",
+        "nutrients": [
+          {
+            "nutrient_abbr": "b",
+            "value": "0.04"
+          },
+          {
+            "nutrient_abbr": "ca",
+            "value": "654.36"
+          },
+          {
+            "nutrient_abbr": "cu",
+            "value": "0.11"
+          },
+          {
+            "nutrient_abbr": "fe",
+            "value": "11.52"
+          },
+          {
+            "nutrient_abbr": "k",
+            "value": "33.88"
+          },
+          {
+            "nutrient_abbr": "mg",
+            "value": "112.8"
+          },
+          {
+            "nutrient_abbr": "mn",
+            "value": "44.58"
+          },
+          {
+            "nutrient_abbr": "na",
+            "value": "1.82"
+          },
+          {
+            "nutrient_abbr": "nh4-n",
+            "value": "7.4574"
+          },
+          {
+            "nutrient_abbr": "no3-n",
+            "value": "0.484"
+          },
+          {
+            "nutrient_abbr": "p",
+            "value": "26.67"
+          },
+          {
+            "nutrient_abbr": "ph",
+            "value": "6.39"
+          },
+          {
+            "nutrient_abbr": "s",
+            "value": "6.29"
+          },
+          {
+            "nutrient_abbr": "zn",
+            "value": "1.03"
+          }
+        ],
+        "sample_location_zone": "crop 103"
+      }
+    ],
+    "sub_system": "MySoil",
+    "submitter": {
+      "email": "lawn@example.com",
+      "submitter_id": 0,
+      "submitter_name": "Test User"
+    },
+    "yield_goal": {
+      "yield_goal": null,
+      "yield_goal_units": null
+    }
+  },
+  "tags": [
+    {
+      "color": "#FFEA37",
+      "id": 637201,
+      "name": "Front Yard",
+      "segmentType": "LAWN",
+      "type": "SEGMENT"
+    },
+    {
+      "color": "#A2339F",
+      "id": 637202,
+      "name": "Back Yard",
+      "segmentType": "LAWN",
+      "type": "SEGMENT"
+    },
+    {
+      "color": "#F67423",
+      "id": 637203,
+      "name": "Side Yard",
+      "segmentType": "LAWN",
+      "type": "SEGMENT"
+    },
+    {
+      "color": "#14985E",
+      "id": 638168,
+      "name": "Front Garden Bed",
+      "segmentType": "LAWN",
+      "type": "SEGMENT"
+    }
+  ],
+  "type": "LAWN",
+  "viewDate": "2026-10-06"
+}

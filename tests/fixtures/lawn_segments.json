@@ -1,0 +1,20 @@
+[
+  {
+    "color": "#F67423",
+    "id": 637203,
+    "latLngPoints": "[]",
+    "name": "Side Yard",
+    "segmentType": "LAWN",
+    "squareFeet": 226,
+    "yardId": 323339
+  },
+  {
+    "color": "#FFEA37",
+    "id": 637201,
+    "latLngPoints": "[]",
+    "name": "Front Yard",
+    "segmentType": "LAWN",
+    "squareFeet": 667,
+    "yardId": 323339
+  }
+]

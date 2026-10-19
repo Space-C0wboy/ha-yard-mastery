@@ -1,0 +1,148 @@
+{
+  "activities": null,
+  "attachments": null,
+  "body": null,
+  "bundleDetails": {
+    "blackoutTreatment": "NONE",
+    "bundleItems": [
+      {
+        "completed": true,
+        "defaultName": null,
+        "description": "Flagship contains nitrogen and iron for lush greening plus potassium, manganese and zinc. Fall time is perfect to the max green from Flagship. Get it watered in with 1/4\" of irrigation or rainfall. ",
+        "displayOrder": 1,
+        "id": 30869937,
+        "journalEntryDate": "2026-10-19",
+        "product": {
+          "applicationRate": 3.0,
+          "coverageSqFt": 1000,
+          "id": 147,
+          "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+          "materialType": "Granular",
+          "measure": "POUNDS",
+          "name": "Flagship",
+          "nitrogen": 24,
+          "phosphorus": 0,
+          "potassium": 6,
+          "productType": {
+            "id": 4,
+            "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+            "name": "Lawn Fertilizer"
+          },
+          "shopifyId": 4872255832116,
+          "taxonomies": [
+            {
+              "description": "Lawn Fertilizer Category",
+              "id": 6,
+              "name": "Lawn Fertilizer",
+              "parentId": 1,
+              "searchMethod": null,
+              "type": "CATEGORY"
+            }
+          ]
+        },
+        "productType": {
+          "id": 4,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/spreader-icon.svg",
+          "name": "Lawn Fertilizer"
+        },
+        "status": "COMPLETED"
+      },
+      {
+        "completed": true,
+        "defaultName": null,
+        "description": "Pre-emergent to stop fall weeds like annual bluegrass, bittercress, henbit and chickweed. Very important for warm season lawns because weeds grow all winter while the lawn goes dormant. This is giving your some defense.",
+        "displayOrder": 2,
+        "id": 30869938,
+        "journalEntryDate": "2026-10-19",
+        "product": {
+          "applicationRate": 3.0,
+          "coverageSqFt": 1000,
+          "id": 16,
+          "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/YM_2Bags_Prodiamine-_WebSquare.jpg?v=1779225393",
+          "materialType": "Granular",
+          "measure": "POUNDS",
+          "name": "Prodiamine",
+          "nitrogen": 0,
+          "phosphorus": 0,
+          "potassium": 7,
+          "productType": {
+            "id": 7,
+            "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+            "name": "Pre-Emergent"
+          },
+          "shopifyId": 7201421656116,
+          "taxonomies": [
+            {
+              "description": "Weed Control Category",
+              "id": 9,
+              "name": "Weed Control",
+              "parentId": 1,
+              "searchMethod": null,
+              "type": "CATEGORY"
+            }
+          ]
+        },
+        "productType": {
+          "id": 7,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+          "name": "Pre-Emergent"
+        },
+        "status": "COMPLETED"
+      },
+      {
+        "completed": true,
+        "defaultName": null,
+        "description": "Compaction Cure is the ultimate fall \"aeration\" product that contains humic, fulvic and kelp PLUS a wetting agent. Apply when soil moisture is present and water it in when done. Ok to apply on top of your fertilizer and prodiamine and water them all in together with 1/4\".",
+        "displayOrder": 3,
+        "id": 30869936,
+        "journalEntryDate": "2026-10-19",
+        "product": {
+          "applicationRate": 9.0,
+          "coverageSqFt": 1000,
+          "id": 575,
+          "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_CompactionCure_MAINimage_quart_gal.jpg?v=1742329746",
+          "materialType": "Liquid",
+          "measure": "OUNCES",
+          "name": "Compaction Cure",
+          "nitrogen": 0,
+          "phosphorus": 0,
+          "potassium": 5,
+          "productType": {
+            "id": 1,
+            "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+            "name": "Bio-Stimulant"
+          },
+          "shopifyId": 7708305063988,
+          "taxonomies": [],
+          "weight": 8.1
+        },
+        "productType": {
+          "id": 1,
+          "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/water-outline.svg",
+          "name": "Bio-Stimulant"
+        },
+        "status": "COMPLETED"
+      }
+    ],
+    "description": "Soil temps are dropping and that means it's time to prevent winter weeds like poa annu (annual bluegrass) hairy bittercress, henbit, chickweed and many many more. We also recommend continued feeding of the turf based on your soil test data on file.",
+    "endDate": "2026-11-18",
+    "id": 12848538,
+    "imageCarousel": [
+      "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+      "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/YM_2Bags_Prodiamine-_WebSquare.jpg?v=1779225393",
+      "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/1000x1000_CompactionCure_MAINimage_quart_gal.jpg?v=1742329746"
+    ],
+    "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/products/YMFlagship_BothBags.jpg?v=1664802832",
+    "name": "STILP Application - Flagship Pack",
+    "startDate": "2026-10-17",
+    "youtubeId": null
+  },
+  "entryDate": "2026-10-17",
+  "id": null,
+  "lawnSegments": null,
+  "lawnSqFt": 893,
+  "name": null,
+  "productApplications": [],
+  "tempUnit": "F",
+  "tempValue": 67.0
+}

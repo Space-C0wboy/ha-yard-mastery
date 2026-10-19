@@ -1,0 +1,7 @@
+{
+  "accessToken": "tok-fixture",
+  "user": {
+    "email": "lawn@example.com",
+    "guid": "user-guid-1"
+  }
+}

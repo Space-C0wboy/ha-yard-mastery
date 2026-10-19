@@ -1,0 +1,86 @@
+{
+  "address": {
+    "city": "Testville",
+    "id": 390486,
+    "stateAbbreviation": "XX",
+    "street1": "1 Test St",
+    "street2": null,
+    "type": "LAWN",
+    "zipCode": {
+      "isValidPostalCode": true,
+      "postalCode": "00000"
+    }
+  },
+  "blackoutEligible": false,
+  "blackoutOptIn": false,
+  "bundle": {
+    "bundleDate": "2026-10-17",
+    "bundleId": 12848538,
+    "bundleName": "STILP Application - Flagship Pack",
+    "programName": "STILP Program",
+    "programStatus": "HAS_ACTIVE_STEPS",
+    "steps": 3,
+    "stepsCompleted": 3,
+    "stepsSkipped": 0
+  },
+  "buyAllPurchaseDate": "2026-10-06T18:34:52",
+  "hasBuyAllPurchase": true,
+  "lawnId": 323339,
+  "lawnProgramTests": [
+    {
+      "barcode": "YM00001",
+      "canInformLawnProgram": true,
+      "createDate": "2026-09-30",
+      "description": "Overall Sample",
+      "doesInformLawnProgram": true,
+      "id": 70766,
+      "statusDisplayName": "Completed",
+      "type": "LAWN",
+      "updateDate": "2026-10-06",
+      "userGuid": "user-guid-1"
+    }
+  ],
+  "lawnType": "Warm Season",
+  "productTypePreference": "LIQUID_GRANULAR_MIX",
+  "program": {
+    "barcode": "YM00001",
+    "programType": "STILP"
+  },
+  "recalculatingLawnProgram": false,
+  "segments": [
+    {
+      "color": "#F67423",
+      "id": 637203,
+      "latLngPoints": "[]",
+      "name": "Side Yard",
+      "segmentType": "LAWN",
+      "squareFeet": 226,
+      "yardId": 323339
+    },
+    {
+      "color": "#FFEA37",
+      "id": 637201,
+      "latLngPoints": "[]",
+      "name": "Front Yard",
+      "segmentType": "LAWN",
+      "squareFeet": 667,
+      "yardId": 323339
+    }
+  ],
+  "selectedTest": {
+    "barcode": "YM00001",
+    "canInformLawnProgram": true,
+    "createDate": "2026-09-30",
+    "description": "Overall Sample",
+    "doesInformLawnProgram": true,
+    "id": 70766,
+    "statusDisplayName": "Completed",
+    "type": "LAWN",
+    "updateDate": "2026-10-06",
+    "userGuid": "user-guid-1"
+  },
+  "shopifySoilTestProductId": 4475521335348,
+  "squareFt": 3672,
+  "squareFtMeasured": 893,
+  "willOverseed": false
+}

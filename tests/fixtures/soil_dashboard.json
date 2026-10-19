@@ -1,0 +1,74 @@
+{
+  "archived": [],
+  "completed": [
+    {
+      "archiveDate": null,
+      "barcode": "YM00001",
+      "canInformLawnProgram": true,
+      "createDate": "2026-09-30",
+      "daysOld": 19,
+      "description": "Overall Sample",
+      "doesInformLawnProgram": true,
+      "id": 70766,
+      "statusDisplayName": "Completed",
+      "tags": [
+        {
+          "color": "#FFEA37",
+          "id": 637201,
+          "name": "Front Yard",
+          "segmentType": "LAWN",
+          "type": "SEGMENT"
+        },
+        {
+          "color": "#A2339F",
+          "id": 637202,
+          "name": "Back Yard",
+          "segmentType": "LAWN",
+          "type": "SEGMENT"
+        },
+        {
+          "color": "#F67423",
+          "id": 637203,
+          "name": "Side Yard",
+          "segmentType": "LAWN",
+          "type": "SEGMENT"
+        },
+        {
+          "color": "#14985E",
+          "id": 638168,
+          "name": "Front Garden Bed",
+          "segmentType": "LAWN",
+          "type": "SEGMENT"
+        }
+      ],
+      "trackingNumber": "TRACK0001",
+      "trackingUrl": "https://example.invalid/track",
+      "type": "LAWN",
+      "updateDate": "2026-10-06",
+      "viewDate": "2026-10-06"
+    }
+  ],
+  "inProgress": [],
+  "soilTestKit": {
+    "id": 587,
+    "imageUrl": "https://cdn.shopify.com/s/files/1/0060/8809/7856/files/soil_test_sq.jpg?v=1747921638",
+    "materialType": "Other",
+    "name": "Yard Mastery Soil Testing Kit",
+    "productType": {
+      "id": 5,
+      "imageUrl": "https://nice-grass-bucket.s3.us-east-2.amazonaws.com/assets/journal-entry/product-category-icons/ellipsis-horizontal-outline.svg",
+      "name": "Other"
+    },
+    "shopifyId": 4475521335348
+  },
+  "user": {
+    "city": "Testville",
+    "email": "lawn@example.com",
+    "firstName": "Test",
+    "lastName": "User",
+    "postalCode": "00000",
+    "stateAbbreviation": "XX",
+    "street1": "1 Test St",
+    "street2": null
+  }
+}

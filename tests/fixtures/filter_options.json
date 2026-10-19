@@ -1,0 +1,34 @@
+{
+  "activities": [
+    {
+      "count": 0,
+      "id": 4,
+      "name": "Aerate"
+    },
+    {
+      "count": 0,
+      "id": 5,
+      "name": "Blow"
+    },
+    {
+      "count": 0,
+      "id": 2,
+      "name": "Dethatch"
+    },
+    {
+      "count": 0,
+      "id": 3,
+      "name": "Edge"
+    },
+    {
+      "count": 0,
+      "id": 1,
+      "name": "Mow"
+    },
+    {
+      "count": 0,
+      "id": 6,
+      "name": "Trim"
+    }
+  ]
+}

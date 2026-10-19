@@ -1,0 +1,88 @@
+{
+  "entity": {
+    "sensor": {
+      "soil_temperature": {
+        "default": "mdi:thermometer-lines"
+      },
+      "program": {
+        "default": "mdi:sprout"
+      },
+      "current_window": {
+        "default": "mdi:calendar-range"
+      },
+      "current_window_progress": {
+        "default": "mdi:progress-check"
+      },
+      "next_window": {
+        "default": "mdi:calendar-arrow-right"
+      },
+      "next_window_start": {
+        "default": "mdi:calendar-start"
+      },
+      "days_until_next_window": {
+        "default": "mdi:timer-sand"
+      },
+      "last_application": {
+        "default": "mdi:spray"
+      },
+      "last_journal_entry": {
+        "default": "mdi:notebook-outline"
+      },
+      "applications_this_year": {
+        "default": "mdi:counter"
+      },
+      "nitrogen_this_year": {
+        "default": "mdi:molecule"
+      },
+      "soil_test": {
+        "default": "mdi:test-tube"
+      },
+      "dug_ai_turns": {
+        "default": "mdi:robot-outline"
+      },
+      "last_sync": {
+        "default": "mdi:sync"
+      }
+    },
+    "binary_sensor": {
+      "treatment_due": {
+        "default": "mdi:alert-circle-outline"
+      },
+      "app_version_valid": {
+        "default": "mdi:check-decagram"
+      }
+    }
+  },
+  "services": {
+    "log_application": {
+      "service": "mdi:spray"
+    },
+    "set_item_status": {
+      "service": "mdi:checkbox-marked-outline"
+    },
+    "log_activity": {
+      "service": "mdi:mower"
+    },
+    "add_photo": {
+      "service": "mdi:camera-plus"
+    },
+    "delete_journal_entry": {
+      "service": "mdi:notebook-remove-outline"
+    },
+    "create_reminder": {
+      "service": "mdi:bell-plus"
+    },
+    "update_reminder": {
+      "service": "mdi:bell-cog"
+    },
+    "dismiss_reminder": {
+      "service": "mdi:bell-check"
+    },
+    "refresh": {
+      "service": "mdi:refresh"
+    },
+    "import_history": {
+      "service": "mdi:history"
+    }
+  }
+}

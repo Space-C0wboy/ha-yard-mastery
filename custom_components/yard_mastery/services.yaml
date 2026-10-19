@@ -1,0 +1,128 @@
+log_application:
+  fields:
+    config_entry_id: &entry
+      selector:
+        config_entry:
+          integration: yard_mastery
+    date: &date
+      selector:
+        date: {}
+    products:
+      selector:
+        object: {}
+      example: '[{"product": "Flagship", "amount": 2.7}]'
+    window: &window
+      selector:
+        text: {}
+      example: current
+    areas: &areas
+      selector:
+        text:
+          multiple: true
+    notes: &notes
+      selector:
+        text:
+          multiline: true
+    soil_temp:
+      selector:
+        number:
+          min: -40
+          max: 140
+          step: 0.1
+set_item_status:
+  fields:
+    config_entry_id: *entry
+    status:
+      required: true
+      selector:
+        select:
+          translation_key: item_status
+          options:
+            - done
+            - skipped
+            - not_done
+    items:
+      selector:
+        object: {}
+      example: "[30869939]"
+    products:
+      selector:
+        text:
+          multiple: true
+    window: *window
+log_activity:
+  fields:
+    config_entry_id: *entry
+    date: *date
+    activities:
+      required: true
+      selector:
+        select:
+          multiple: true
+          translation_key: activity
+          options:
+            - mow
+            - edge
+            - aerate
+            - dethatch
+            - blow
+            - trim
+    areas: *areas
+    notes: *notes
+add_photo:
+  fields:
+    config_entry_id: *entry
+    date: *date
+    file:
+      selector:
+        text: {}
+      example: /media/lawn.jpg
+    entity_id:
+      selector:
+        entity:
+          domain:
+            - camera
+            - image
+delete_journal_entry:
+  fields:
+    config_entry_id: *entry
+    date: *date
+    entry_id:
+      selector:
+        number:
+          min: 1
+          mode: box
+create_reminder:
+  fields:
+    config_entry_id: *entry
+    date:
+      required: true
+      selector:
+        date: {}
+    title:
+      required: true
+      selector:
+        text: {}
+update_reminder:
+  fields:
+    config_entry_id: *entry
+    reminder_id: &reminder_id
+      required: true
+      selector:
+        number:
+          min: 1
+          mode: box
+    date: *date
+    title:
+      selector:
+        text: {}
+dismiss_reminder:
+  fields:
+    config_entry_id: *entry
+    reminder_id: *reminder_id
+refresh:
+  fields:
+    config_entry_id: *entry
+import_history:
+  fields:
+    config_entry_id: *entry
