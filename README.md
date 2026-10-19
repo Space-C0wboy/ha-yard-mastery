@@ -163,6 +163,11 @@ In the app an item is **done** because a journal entry has an application linked
 
 - `amount` is the total over the whole lawn (as for `log_application`) and only works when one item is targeted. If that day's entry already has the product, `done` links the item to it and keeps the amount recorded there.
 - If `not_done` leaves an entry with nothing in it — no applications, activities, photos, areas, title or note text — the entry is deleted, as the app does. Otherwise it is saved.
+- `amount` is refused when that day's entry already has the product — change that amount with `log_application`.
+- Two items for the same product in one `done` call share one application on the entry, at the amount of the last of them.
+- `done` defaults to today, even for a past window (the app uses an expired window's end date) — pass `date` to log it on another day.
+- `not_done` also removes the notes the app writes when an item is ticked (*Completed …* / *Completing … - …*), as the app does.
+- If a change is made of several steps (unskipping, then one journal entry per date) and one fails, the steps already made are kept, logged and recorded, and the error says which went through.
 - `date` and `amount` are only for `done`. The response lists what happened to each item.
 
 ### Example: log what you spread today

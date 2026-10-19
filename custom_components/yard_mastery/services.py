@@ -28,6 +28,8 @@ from .writes import (
     resolve_product,
     resolve_window,
     run_write,
+    run_write_steps,
+    strip_auto_notes,
     unlink_bundle_item,
     window_of,
 )
@@ -350,29 +352,77 @@ async def _undo_items(coordinator: YmCoordinator, items: list[WindowItem]) -> di
                     "change it in the app"
                 )
             entry = unlinked
+        body = strip_auto_notes(entry.get("body"), _completion_notes(coordinator.data, day_items))
+        if body != (entry.get("body") or ""):
+            entry["body"] = body
         entries[day] = entry
     if not skipped and not entries:
         return {"items": list(outcomes.values())}
 
-    async def change() -> None:
-        if skipped:
+    steps: list[tuple[dict, Callable[[], Awaitable[Any]]]] = []
+    if skipped:
+
+        async def unskip() -> None:
             await coordinator.client.set_item_status([i.id for i in skipped], "CREATED")
             for item in skipped:
                 outcomes[item.id] = _outcome(item, "unskipped")
-        for day, entry in entries.items():
-            if entry_is_empty(entry):
+
+        names = ", ".join(i.product_name for i in skipped)
+        steps.append((_status_detail("not_done", skipped, step=f"unskipped {names}"), unskip))
+    for day, entry in entries.items():
+        empty = entry_is_empty(entry)
+
+        async def unlink(day: date = day, entry: dict = entry, empty: bool = empty) -> None:
+            if empty:
                 await coordinator.client.delete_journal_entry(entry["id"])
                 coordinator.store.drop(f"journal:{day.isoformat()}")
-                result = "deleted"
             else:
                 await coordinator.client.save_journal_entry(build_journal_entry(entry, day))
-                result = "saved"
             for item in by_day[day]:
-                outcomes[item.id] = _outcome(item, "removed", date=day.isoformat(), journal_entry=result)
+                outcomes[item.id] = _outcome(
+                    item, "removed", date=day.isoformat(), journal_entry="deleted" if empty else "saved"
+                )
 
-    changed = [*skipped, *(i for day_items in by_day.values() for i in day_items)]
-    await run_write(coordinator, "set_item_status", _status_detail("not_done", changed), change)
+        names = ", ".join(i.product_name for i in by_day[day])
+        what = "deleted the entry, now empty" if empty else "saved the entry"
+        step = f"removed {names} from the {day.isoformat()} journal entry ({what})"
+        steps.append((_status_detail("not_done", by_day[day], date=day.isoformat(), step=step), unlink))
+    await run_write_steps(coordinator, "set_item_status", steps)
     return {"items": list(outcomes.values())}
+
+
+def _js_number(value: Any) -> str:
+    if value is None:
+        return "null"
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)
+
+
+def _app_item_name(window: Window, item: WindowItem) -> str:
+    """The app's BundleItem.name(): "N-P-K " (unless all zero) before the product name."""
+    product = _item_product(window, item)
+    npk = [product[k] for k in ("nitrogen", "phosphorus", "potassium") if k in product]
+    if len(npk) == 3 and npk != [0, 0, 0]:
+        return f"{'-'.join(_js_number(v) for v in npk)} {product.get('name')}"
+    return str(product.get("name"))
+
+
+def _completion_notes(data: Any, items: list[WindowItem]) -> list[str]:
+    """The notes the app strips when it un-ticks these items (Bundle.uncomplete's notesToRemove), per window."""
+    notes: list[str] = []
+    by_window: dict[int, tuple[Window, list[WindowItem]]] = {}
+    for item in items:
+        window = window_of(data, item.id)
+        if window is not None:
+            by_window.setdefault(window.id, (window, []))[1].append(item)
+    for window, window_items in by_window.values():
+        names = [_app_item_name(window, i) for i in window_items]
+        notes.append(f"Completed {window.name}")
+        if len(names) > 1:
+            notes.append(f"Completing {window.name} - {', '.join(names)}")
+        notes.extend(f"Completing {window.name} - {name}" for name in names)
+    return notes
 
 
 async def _complete_items(
@@ -399,6 +449,11 @@ async def _complete_items(
         built = []
         for item, product in planned:
             total = amount
+            if total is not None and product.get("id") in logged:
+                raise ServiceValidationError(
+                    f"{item.product_name} is already logged on {day.isoformat()} with {logged[product.get('id')]}; "
+                    "edit it with log_application"
+                )
             if total is None and product.get("id") in logged:
                 # Already on that day's entry: link it and keep the amount recorded there.
                 outcomes[item.id] = _outcome(item, "logged", date=day.isoformat(), amount=logged[product.get("id")])

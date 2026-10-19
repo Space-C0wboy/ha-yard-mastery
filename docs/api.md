@@ -107,7 +107,7 @@ the item then reports `COMPLETED` with that entry's date as `journalEntryDate`. 
 - **Delete an entry:** deleting an entry with linked applications uncompletes those items (the app warns about it).
 
 The integration's `set_item_status` follows this: `done` posts the entry, `not_done` saves or deletes it, and only
-skip / unskip use `change-status`. It does not strip notes from the entry body.
+skip / unskip use `change-status`. `not_done` strips the same auto-written notes before the empty check.
 
 The integration never calls admin endpoints (`/v2/admin/*`, `/v1/property`, banners), the cart, "Buy All",
 Shopify, or account/settings writes.

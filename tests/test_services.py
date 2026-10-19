@@ -1,10 +1,11 @@
 """Tests for the Yard Mastery actions: write gate, journal writes, item status, photos, reminders."""
 import copy
+import re
 from datetime import date
 
 import pytest
 import voluptuous as vol
-from homeassistant.exceptions import ServiceValidationError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from pytest_homeassistant_custom_component.common import async_capture_events
 
 from custom_components.yard_mastery.const import DOMAIN, WRITES_OFF_MESSAGE
@@ -379,6 +380,166 @@ async def test_set_item_status_logbook(hass, mock_ym, load_entry):
     last = entry.runtime_data.store.history[-1]
     assert last["kind"] == "write_set_item_status"
     assert last["detail"]["items"] == [30869939]
+
+
+def _entry_on(day: str) -> dict:
+    for year in fixture("calendar_2026")["years"]:
+        for d in year["days"]:
+            if d["date"] == day:
+                return copy.deepcopy(d["journalEntry"])
+    raise AssertionError
+
+
+def _mixed_not_done() -> dict:
+    """Dimension (next window) skipped, Flagship (current window) done on 2026-10-19."""
+    kwargs = _dimension("SKIPPED")
+    kwargs["overrides"]["/v3/journal/entry"] = _entry_10_19()
+    return kwargs
+
+
+async def test_set_item_status_not_done_unskips_and_unlinks(hass, mock_ym, load_entry):
+    entry = await load_entry(allow_writes=True, **_mixed_not_done())
+    events = async_capture_events(hass, "logbook_entry")
+    mock_ym.put(url("/v1/dlux/user-bundle-item/change-status"), status=200)
+    mock_ym.post(url("/v2/journal/entry"), payload=SAVED)
+    response = await _call(hass, "set_item_status", {"status": "not_done", "items": [30869939, 30869937]})
+    await hass.async_block_till_done()
+    assert sent(mock_ym, "PUT", "/v1/dlux/user-bundle-item/change-status") == [
+        {"bundleItemIds": [30869939], "status": "CREATED"}
+    ]
+    (body,) = sent(mock_ym, "POST", "/v2/journal/entry")
+    assert "Flagship" not in {a["product"]["name"] for a in body["productApplications"]}
+    assert [i["action"] for i in response["items"]] == ["unskipped", "removed"]
+    assert len(events) == 2
+    assert [h["detail"]["items"] for h in entry.runtime_data.store.history[-2:]] == [[30869939], [30869937]]
+
+
+async def test_set_item_status_partial_failure_records_what_went_through(hass, mock_ym, load_entry):
+    entry = await load_entry(allow_writes=True, **_mixed_not_done())
+    events = async_capture_events(hass, "logbook_entry")
+    mock_ym.put(url("/v1/dlux/user-bundle-item/change-status"), status=200)
+    mock_ym.post(url("/v2/journal/entry"), status=500)
+    polls = sum("/v4/home/bundle" in c for c in requested(mock_ym))
+    with pytest.raises(HomeAssistantError) as err:
+        await _call(hass, "set_item_status", {"status": "not_done", "items": [30869939, 30869937]})
+    await hass.async_block_till_done()
+    message = str(err.value)
+    assert "Changed before the failure: unskipped Dimension" in message
+    assert "Not changed: removed Flagship from the 2026-10-19 journal entry" in message
+    assert [e.data["message"] for e in events] == ["Home Assistant set Dimension to not done"]
+    last = entry.runtime_data.store.history[-1]
+    assert last["kind"] == "write_set_item_status"
+    assert last["detail"]["items"] == [30869939]
+    assert sum("/v4/home/bundle" in c for c in requested(mock_ym)) == polls + 1
+
+
+async def test_set_item_status_not_done_on_two_journal_dates(hass, mock_ym, load_entry):
+    # Flagship (current window) on 10-19 is the only thing in its entry; the previous window's Flagship on 10-08
+    # shares its entry with Spoon Juice.
+    mock_ym.get(re.compile(r".*/v3/journal/entry\?.*date=2026-10-08.*"), payload=_entry_on("2026-10-08"), repeat=True)
+    mock_ym.get(re.compile(r".*/v3/journal/entry\?.*date=2026-10-19.*"), payload=_only_flagship(), repeat=True)
+    await load_entry(allow_writes=True)
+    mock_ym.post(url("/v2/journal/entry"), payload=SAVED)
+    mock_ym.delete(url("/v1/journal/entry/1552252"), status=200)
+    response = await _call(hass, "set_item_status", {"status": "not_done", "items": [30869935, 30869937]})
+    (body,) = sent(mock_ym, "POST", "/v2/journal/entry")
+    assert body["id"] == 1548551
+    assert [a["product"]["name"] for a in body["productApplications"]] == ["Spoon Juice"]
+    assert [c.split("?")[0] for c in _writes(mock_ym)] == ["POST /v2/journal/entry", "DELETE /v1/journal/entry/1552252"]
+    assert [(i["date"], i["journal_entry"]) for i in response["items"]] == [
+        ("2026-10-08", "saved"),
+        ("2026-10-19", "deleted"),
+    ]
+
+
+async def test_set_item_status_not_done_without_journal_date_is_refused(hass, mock_ym, load_entry):
+    kwargs = _item_state(CURRENT, "bundle_current", journalEntryDate=None)
+    await load_entry(allow_writes=True, **kwargs)
+    with pytest.raises(ServiceValidationError, match="no journal date for Flagship"):
+        await _call(hass, "set_item_status", {"status": "not_done", "items": [30869937]})
+    assert not _writes(mock_ym)
+
+
+_APP_NOTES = (
+    "<p>Completed&nbsp;STILP&nbsp;Application&nbsp;-&nbsp;Flagship&nbsp;Pack</p>"
+    "<p>Completing&nbsp;STILP&nbsp;Application&nbsp;-&nbsp;Flagship&nbsp;Pack&nbsp;-&nbsp;24-0-6&nbsp;Flagship</p>"
+)
+
+
+async def test_set_item_status_not_done_strips_the_apps_notes(hass, mock_ym, load_entry):
+    await load_entry(allow_writes=True, overrides={"/v3/journal/entry": _only_flagship(body=_APP_NOTES)})
+    mock_ym.delete(url("/v1/journal/entry/1552252"), status=200)
+    response = await _call(hass, "set_item_status", {"status": "not_done", "items": [30869937]})
+    assert response["items"][0]["journal_entry"] == "deleted"
+
+
+async def test_set_item_status_not_done_keeps_other_notes(hass, mock_ym, load_entry):
+    body = _APP_NOTES + "<br><p>Watered in.</p>"
+    await load_entry(allow_writes=True, overrides={"/v3/journal/entry": _only_flagship(body=body)})
+    mock_ym.post(url("/v2/journal/entry"), payload=SAVED)
+    await _call(hass, "set_item_status", {"status": "not_done", "items": [30869937]})
+    (saved,) = sent(mock_ym, "POST", "/v2/journal/entry")
+    assert saved["body"] == "<br><p>Watered in.</p>"  # what the app's own stripping leaves
+
+
+async def test_set_item_status_done_on_skipped_item(hass, mock_ym, load_entry):
+    kwargs = _dimension("SKIPPED")
+    kwargs["overrides"]["/v3/journal/entry"] = {"id": None}
+    await load_entry(allow_writes=True, **kwargs)
+    mock_ym.post(url("/v2/journal/entry"), payload=SAVED)
+    await _call(hass, "set_item_status", {"status": "done", "items": [30869939]})
+    (body,) = sent(mock_ym, "POST", "/v2/journal/entry")
+    (app,) = body["productApplications"]
+    assert app["bundleItemIds"] == [30869939]
+    assert app["appliedRate"] == 2.68
+    assert not sent(mock_ym, "PUT", "/v1/dlux/user-bundle-item/change-status")
+
+
+async def test_set_item_status_done_merges_into_existing_entry(hass, mock_ym, load_entry):
+    existing = _entry_10_19()
+    existing.update(
+        lawnSqFt=900,
+        tempValue=60,
+        tempUnit="F",
+        body="<p>Watered in.</p>",
+        activities=[{"id": 1, "name": "Mow"}],
+        attachments=[{"id": 7, "hostedUrl": "https://example.invalid/a.jpg", "reference": "a.jpg"}],
+    )
+    await load_entry(allow_writes=True, overrides={"/v3/journal/entry": existing})
+    mock_ym.post(url("/v2/journal/entry"), payload=SAVED)
+    await _call(hass, "set_item_status", {"status": "done", "items": [30869939]})
+    (body,) = sent(mock_ym, "POST", "/v2/journal/entry")
+    assert body["id"] == 1552252
+    assert body["lawnSqFt"] == 900
+    assert body["tempValue"] == 60
+    assert body["body"] == "<p>Watered in.</p>"
+    assert body["activities"] == existing["activities"]
+    assert body["attachments"] == existing["attachments"]
+    apps = {a["product"]["name"]: a for a in body["productApplications"]}
+    assert apps.keys() == {"Compaction Cure", "Prodiamine", "Flagship", "Dimension"}
+    assert apps["Dimension"]["appliedRate"] == 2.7  # 3.0 per 1000 on the entry's 900 sq ft
+    assert apps["Flagship"]["bundleItemIds"] == [30869937]
+
+
+async def test_set_item_status_done_amount_refuses_to_overwrite(hass, mock_ym, load_entry):
+    existing = _entry_10_19()
+    for app in existing["productApplications"]:
+        app["bundleItemIds"] = []
+    created = _all_created()
+    created["overrides"]["/v3/journal/entry"] = existing
+    await load_entry(allow_writes=True, **created)
+    with pytest.raises(ServiceValidationError, match="Flagship is already logged on 2026-10-19 with 2.8"):
+        await _call(hass, "set_item_status", {"status": "done", "products": ["Flagship"], "amount": 3.0})
+    assert not _writes(mock_ym)
+
+
+async def test_set_item_status_writes_off_makes_no_request(hass, mock_ym, load_entry):
+    await load_entry()
+    before = len(requested(mock_ym))
+    for status in ("done", "skipped", "not_done"):
+        with pytest.raises(ServiceValidationError, match=WRITES_OFF_MESSAGE):
+            await _call(hass, "set_item_status", {"status": status, "products": ["Dimension"], "window": "next"})
+    assert len(requested(mock_ym)) == before
 
 
 async def test_unknown_product_is_validation_error(hass, mock_ym, load_entry):
