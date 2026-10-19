@@ -119,7 +119,7 @@
         },
         "products": {
           "name": "Products",
-          "description": "List of {product, amount}: product name or id, and the total amount you spread over the lawn (as the app records it). Without amount, the recommended rate times your lawn size is used."
+          "description": "List of products, each with `product` (name or id) and optional `amount`:, and the total amount you spread over the lawn (as the app records it). Without amount, the recommended rate times your lawn size is used."
         },
         "window": {
           "name": "Window",
