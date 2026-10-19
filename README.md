@@ -1,99 +1,159 @@
-# Yard Mastery for Home Assistant
+> ⚠️ **Personal project — not a professional developer.** These integrations were built for personal use via AI-assisted "vibe coding" (Claude). They work for my setup but may have rough edges. Use at your own risk, PRs welcome, and please be kind in issues.
 
-Brings your [Yard Mastery](https://yardmastery.com) lawn-care program into Home Assistant: the treatment windows,
-your journal and reminders on a calendar, sensors for the current and next window, and actions to log what you
-did, so you do not have to open the app.
+<p align="center">
+  <img src="custom_components/yard_mastery/brand/icon.png" alt="Yard Mastery for Home Assistant" width="96">
+</p>
 
-**Unofficial.** This project is not affiliated with, endorsed by, or supported by Yard Mastery. It uses the same
-private web API the phone app uses, which is undocumented and may change or stop working without notice. Use it at
-your own risk and be kind to their servers (polling is deliberately slow).
+# Yard Mastery — Home Assistant Integration
 
-Your Yard Mastery email and password are typed by you into Home Assistant's setup dialog and stored in Home
-Assistant like any other cloud integration. Nothing personal is kept in this repository.
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![GitHub Release](https://img.shields.io/github/v/release/Space-C0wboy/ha-yard-mastery?include_prereleases&label=release)](https://github.com/Space-C0wboy/ha-yard-mastery/releases)
+[![Tests](https://img.shields.io/github/actions/workflow/status/Space-C0wboy/ha-yard-mastery/tests.yml?branch=main&label=tests)](https://github.com/Space-C0wboy/ha-yard-mastery/actions/workflows/tests.yml)
+[![Validate](https://img.shields.io/github/actions/workflow/status/Space-C0wboy/ha-yard-mastery/validate.yml?branch=main&label=hassfest%20%2B%20HACS)](https://github.com/Space-C0wboy/ha-yard-mastery/actions/workflows/validate.yml)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.3%2B-18BCF2.svg?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![IoT class](https://img.shields.io/badge/IoT-cloud%20polling-blue.svg)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
+[![License: MIT](https://img.shields.io/github/license/Space-C0wboy/ha-yard-mastery)](LICENSE)
 
-## Install
+A [HACS](https://hacs.xyz/) custom integration for the [Yard Mastery](https://yardmastery.com) lawn-care app. It brings your lawn program into Home Assistant: treatment windows, your journal and reminders on a **calendar**, **sensors** for the current and next window, and **actions** to log what you did, so you don't have to open the app.
 
-1. In HACS, add this repository as a custom repository (category: Integration):
-   `https://github.com/Space-C0wboy/ha-yard-mastery`
-2. Install **Yard Mastery** and restart Home Assistant.
-3. Settings > Devices & services > Add integration > **Yard Mastery**, and sign in with your email and password.
+> [!CAUTION]
+> **Unofficial.** This project is not affiliated with, endorsed by, or supported by Yard Mastery. It uses the same private web API the phone app uses, which is undocumented and may change or stop working without notice. Polling is deliberately slow — please be kind to their servers.
 
-The first setup imports your history: every past year of your calendar, each journal entry, and the details of
-every window. This can take a while on an account with years of data; later polls are small.
+---
 
-## Options
+## Features
 
-Settings > Devices & services > Yard Mastery > Configure.
+- **Your program on a calendar:** every treatment window (with each product's rate and the amount for your lawn), every journal entry, and your reminders — past and future.
+- **Sensors for the lawn:** soil temperature, the current and next window, progress, a "treatment due" flag, last application, applications and nitrogen this season, soil-test values and lawn areas.
+- **History, kept:** your whole history is imported on first setup. A built-in change log records *when* things changed ("when was that marked done?"), even though the app only shows the current state.
+- **Log from Home Assistant:** applications, activities (mow, edge, aerate…), photos, item status and reminders — from dashboards, automations or Assist.
+- **Safe by default:** writes are **off** until you turn them on. Nothing changes in Yard Mastery unless you (or an automation you wrote) call an action.
+- **Light on the API:** a normal poll makes at most 10 requests; slow-changing data refreshes every 6 hours.
+- **Private:** your login stays in Home Assistant, the diagnostics download is redacted, and nothing personal lives in this repository.
+- **No extra dependencies:** uses only `aiohttp`, which is already bundled with Home Assistant.
 
-| Option | Default | What it does |
-|---|---|---|
-| Allow changes to Yard Mastery | **off** | Lets the actions below, and reminder edits in the calendar, change your Yard Mastery data. Off means Home Assistant only reads. |
-| App version to report | `4.00.05` | The app version sent with every request. See "If Yard Mastery retires the app version". |
-| Update interval (minutes) | 30 | 15 to 1440. Slower data (soil tests, lawn segments, next year's calendar) refreshes every 6 hours; reference lists daily. A normal poll makes no more than about 10 requests. |
-
-Turning "Allow changes" on or off reloads the integration.
+---
 
 ## Entities
 
-One device, **Yard Mastery**.
+One device, **Yard Mastery**, with the program type as its model.
 
-Sensors: soil temperature, program (with lawn type, square feet and program details as attributes), current
-window, current window progress, next window, next window start, days until next window, last application, last
-journal entry, applications this year, nitrogen this year (pounds of N per 1,000 sq ft, worked out from what you
-logged; liquid products are listed under `not_counted` instead of guessed), and soil test.
+| Entity | Entity ID | State | Notes |
+|--------|-----------|-------|-------|
+| Soil temperature | `sensor.yard_mastery_soil_temperature` | °F (or °C) | 24-hour average for your ZIP |
+| Program | `sensor.yard_mastery_program` | `STILP`, `DLUX`, … | Lawn type, square feet, product preference and program details as attributes |
+| Current window | `sensor.yard_mastery_current_window` | Window name | Start, end, description and each product: rate, unit, amount for your lawn, N-P-K, status |
+| Current window progress | `sensor.yard_mastery_current_window_progress` | % | Steps, completed, skipped, remaining |
+| Next window | `sensor.yard_mastery_next_window` | Window name | Same attributes as the current window |
+| Next window start | `sensor.yard_mastery_next_window_start` | Date | — |
+| Days until next window | `sensor.yard_mastery_days_until_next_window` | Days | — |
+| Treatment due | `binary_sensor.yard_mastery_treatment_due` | On / off | On while the current window still has items not done |
+| Last application | `sensor.yard_mastery_last_application` | Date | Products and amounts, soil temperature, areas, notes |
+| Last journal entry | `sensor.yard_mastery_last_journal_entry` | Date | Name, notes, activities, photo count |
+| Applications this year | `sensor.yard_mastery_applications_this_year` | Count | — |
+| Nitrogen this year | `sensor.yard_mastery_nitrogen_this_year` | lb N / 1,000 sq ft | Worked out from what you logged; P and K as attributes |
+| Soil test | `sensor.yard_mastery_soil_test` | Test status | Test date, days old, recommended products |
+| Calendar | `calendar.yard_mastery` | On while an event is happening | See [Calendar](#calendar) |
 
-Diagnostic sensors: Dug AI turns, last sync, one sensor per measured value in your latest soil-test report (the
-common ones are enabled, the rest are disabled by default), and one per lawn segment (square feet).
+**Diagnostic entities:** one sensor per measured soil-test value (pH, N, P, K and organic matter are enabled; the rest are disabled by default), one per lawn area (square feet), Dug AI turns, last sync, and **app version valid**.
 
-Binary sensors: **treatment due** (on while the current window still has items not done) and, as a diagnostic,
-**app version valid**.
+> [!NOTE]
+> **Nitrogen** only counts granular products (rates by weight). Liquid products are rated by volume and the app gives no density, so they are listed under the `not_counted` attribute instead of guessed.
 
-Large or private data (lawn polygons, the whole calendar, image carousels, the full lab report) is kept in
-Home Assistant's storage only, not in entity attributes. The same storage keeps an append-only change log ("when
-was that marked done?").
+> [!TIP]
+> Big or private data — lawn polygons, the whole calendar, image carousels, the full lab report — is kept in Home Assistant's storage, not in entity attributes, so your database stays small. Download diagnostics to see it.
+
+> **Note:** Entity IDs may vary if you have renamed entities. The names above are the defaults.
+
+---
+
+## Installation
+
+### Via HACS (Recommended)
+
+1. Open HACS → ⋮ → **Custom repositories**
+2. Add `https://github.com/Space-C0wboy/ha-yard-mastery` with type **Integration**
+3. Search for **Yard Mastery** and click **Download**
+4. Restart Home Assistant
+
+### Manual
+
+1. Copy `custom_components/yard_mastery` into your `config/custom_components/` folder
+2. Restart Home Assistant
+
+---
+
+## Configuration
+
+1. Go to **Settings → Devices & services → Add integration**
+2. Search for **Yard Mastery**
+3. Sign in with your Yard Mastery email and password
+
+> [!IMPORTANT]
+> The first setup imports your history — every past year of your calendar, each journal entry and the details of every window. On an account with years of data this can take a while. Later polls are small.
+
+### Options
+
+**Settings → Devices & services → Yard Mastery → Configure**
+
+| Option | Default | What it does |
+|--------|---------|--------------|
+| Allow changes to Yard Mastery | **Off** | Lets the actions, and reminder edits in the calendar, change your Yard Mastery data. Off means Home Assistant only reads. |
+| App version to report | `4.00.05` | Sent with every request. See [If Yard Mastery retires the app version](#if-yard-mastery-retires-the-app-version). |
+| Update interval (minutes) | `30` | 15 to 1440. Soil tests, lawn areas and next year's calendar refresh every 6 hours; reference lists daily. |
+
+Changing an option reloads the integration.
+
+---
 
 ## Calendar
 
-`calendar.yard_mastery` shows three kinds of all-day events: program windows (with each product's rate, the amount
-for your lawn, and its status), journal entries (what was applied or done), and reminders.
+`calendar.yard_mastery` shows three kinds of all-day events:
 
-With "Allow changes" on, you can create, edit and delete **reminders** from the calendar. These are reminders
-only: editing program windows or journal entries is refused in the calendar (use the actions below). Deleting a
-reminder dismisses it in Yard Mastery, which cannot be undone.
+| Event | Shows |
+|-------|-------|
+| Program window | Each product's rate per 1,000 sq ft, the amount for your lawn, and whether it's done |
+| Journal entry | What was applied (with amounts) or done, areas, soil temperature, notes, photo count |
+| Reminder | Your reminder text |
+
+With **Allow changes** on, you can create, edit and delete **reminders** from the calendar. Program windows and journal entries can't be edited there — use the [actions](#actions).
+
+> [!WARNING]
+> Deleting a reminder **dismisses** it in Yard Mastery, and that can't be undone.
+
+---
 
 ## Actions
 
-All actions accept an optional `config_entry_id` (only needed with several accounts) and return what they changed.
-With "Allow changes" off, every action except `refresh` and `import_history` fails with "Changes to Yard Mastery are
-turned off in the integration's options". Every change is written to the logbook and the change log, then followed
-by a refresh.
+> [!IMPORTANT]
+> With **Allow changes** off, every action except `refresh` and `import_history` fails with *"Changes to Yard Mastery are turned off in the integration's options"*. Every change is written to the logbook and the change log, then followed by a refresh. All actions take an optional `config_entry_id` (only needed with several accounts) and return what they changed.
 
-- `yard_mastery.log_application` -- create or update the journal entry for a date (default today), merging with an
-  entry already on that day (existing applications, activities and photos are kept).
-  - `products`: a list of `{product, amount}`. `amount` is the **total amount applied over your whole lawn**, the
-    same number the app records. Leave it out and the recommended total is used: rate x lawn size / coverage.
-    The lawn size is the one the app measured for your yard.
-  - Without `products`, the items of the `window` (default the current one) that are not done yet are logged at
-    their recommended amount and marked done. **Experimental:** this program-linked default has not yet been
-    verified on a real application and may change in a later release. Name the products until then.
-  - Optional: `areas` (lawn segment names), `notes`, `soil_temp` (defaults to today's ZIP soil temperature).
-- `yard_mastery.set_item_status` -- mark program items `done`, `skipped` or `not_done`, by `items` (ids) or by
-  `products` in a `window`.
-- `yard_mastery.log_activity` -- add mow, edge, aerate, dethatch, blow or trim to a date's entry, with optional
-  `areas` and `notes`.
-- `yard_mastery.add_photo` -- attach a photo to a date's entry, from a camera or image entity (`entity_id`) or a
-  file. A `file` must be a path under `/config` or `/media` that Home Assistant allows, meaning its folder is in
-  `allowlist_external_dirs` (media folders are allowed by default).
-- `yard_mastery.delete_journal_entry` -- delete an entry. You must give a `date` or an `entry_id`; there is no
-  default.
-- `yard_mastery.create_reminder`, `update_reminder`, `dismiss_reminder` -- the same reminder operations as the
-  calendar. Reminder ids appear in the calendar events.
-- `yard_mastery.refresh` and `yard_mastery.import_history` -- always available (they only read).
+| Action | What it does |
+|--------|--------------|
+| `yard_mastery.log_application` | Create or update the journal entry for a date (default today). Merges with an entry already on that day — existing applications, activities and photos are kept. |
+| `yard_mastery.set_item_status` | Mark program items `done`, `skipped` or `not_done`, by `items` (ids) or by `products` in a `window`. |
+| `yard_mastery.log_activity` | Add `mow`, `edge`, `aerate`, `dethatch`, `blow` or `trim` to a date's entry, with optional `areas` and `notes`. |
+| `yard_mastery.add_photo` | Attach a photo to a date's entry, from a camera or image entity (`entity_id`) or a `file`. |
+| `yard_mastery.delete_journal_entry` | Delete an entry. A `date` or `entry_id` is required — there is no default. |
+| `yard_mastery.create_reminder` / `update_reminder` / `dismiss_reminder` | The same reminder operations as the calendar. Reminder ids appear in the calendar events. |
+| `yard_mastery.refresh` / `import_history` | Always available — they only read. |
 
-Examples:
+### `log_application` amounts
+
+- `products` is a list of `product` (name or id) and optional `amount`.
+- `amount` is the **total amount applied over your whole lawn** — the same number the app records, not a per-1,000 sq ft rate.
+- Leave `amount` out and the recommended total is used: rate × lawn size ÷ coverage. The lawn size is the one the app measured for your yard.
+- Optional: `areas` (lawn area names), `notes`, `soil_temp` (defaults to today's ZIP soil temperature).
+
+> [!WARNING]
+> **Experimental:** calling `log_application` *without* `products` logs the current `window`'s open items at their recommended amounts and marks them done. This program-linked default hasn't been verified on a real application yet and may change. Name the products until then.
+
+> [!NOTE]
+> A `file` for `add_photo` must be under `/config` or `/media` and allowed by Home Assistant — its folder must be in [`allowlist_external_dirs`](https://www.home-assistant.io/integrations/homeassistant/#allowlist_external_dirs). Media folders are allowed by default.
+
+### Example: log what you spread today
 
 ```yaml
-# Log what you spread today, with the amounts you actually put down
 action: yard_mastery.log_application
 data:
   products:
@@ -103,10 +163,7 @@ data:
   notes: Watered in afterwards.
 ```
 
-```yaml
-# Log everything still open in the current window (experimental)
-action: yard_mastery.log_application
-```
+### Example: log a mow and edge
 
 ```yaml
 action: yard_mastery.log_activity
@@ -114,11 +171,15 @@ data:
   activities: [mow, edge]
 ```
 
+### Example: snap a photo for today's entry
+
 ```yaml
 action: yard_mastery.add_photo
 data:
   entity_id: camera.front_yard
 ```
+
+### Example: skip a product in the current window
 
 ```yaml
 action: yard_mastery.set_item_status
@@ -127,29 +188,76 @@ data:
   products: [Prodiamine]
 ```
 
+### Example: a heads-up the evening before a window opens
+
+```yaml
+triggers:
+  - trigger: calendar
+    event: start
+    entity_id: calendar.yard_mastery
+    offset: "-6:00:00"
+conditions:
+  - condition: template
+    value_template: "{{ 'Application' in trigger.calendar_event.summary }}"
+actions:
+  - action: notify.mobile_app_my_phone
+    data:
+      title: "Lawn window opens tomorrow"
+      message: "{{ trigger.calendar_event.summary }}"
+```
+
+---
+
 ## If Yard Mastery retires the app version
 
-Yard Mastery can stop accepting an old app version. When it does, the **app version valid** sensor turns off and a
-repair issue appears. Put a newer version in the integration's options ("App version to report"). How to find the
-current version is in [docs/api.md](docs/api.md#how-to-re-read-a-new-app-version).
+Yard Mastery can stop accepting an old app version. When it does, **app version valid** turns off and a repair issue appears.
 
-## Diagnostics
+> [!TIP]
+> Put a newer version in the integration's options (**App version to report**). How to find the current version is in [docs/api.md](docs/api.md#how-to-re-read-a-new-app-version).
 
-Download diagnostics from the integration page to attach to an issue. They include the stored data and change log
-with personal information redacted (email, password, token, names, address, coordinates and lawn polygons, user id,
-soil-test barcode, tracking details, and photo links). Please still glance through before posting.
+---
+
+## Data & Refresh
+
+| What | How often |
+|------|-----------|
+| Soil temperature, current/next window, this year's calendar, account status | Every poll (default 30 min) |
+| Lawn areas, soil tests and reports, next year's calendar, missing window details | Every 6 hours |
+| Activity and program reference lists, app version check | Daily |
+| Full history import | First setup, or `yard_mastery.import_history` |
+
+A failed request is retried at most hourly, and a poll never makes more than 10 requests.
+
+---
 
 ## Troubleshooting
 
-- Reauth prompt: your password changed, or sign-in failed repeatedly. Enter the current password. Home Assistant
-  never retries in a loop (at most one re-login per 15 minutes).
-- Data looks stale: call `yard_mastery.refresh`, or check the **last sync** sensor.
+| Problem | What to do |
+|---------|------------|
+| Reauth prompt | Your password changed, or sign-in failed repeatedly. Enter the current password. Home Assistant never retries in a loop (at most one re-login per 15 minutes). |
+| Data looks stale | Call `yard_mastery.refresh`, or check the **last sync** sensor and its `last_error` attribute. |
+| Actions fail with "turned off" | Turn on **Allow changes to Yard Mastery** in the options. |
+| Repair issue about the app version | See [If Yard Mastery retires the app version](#if-yard-mastery-retires-the-app-version). |
 
-## Credits and license
+### Diagnostics
 
-Built by [Space-C0wboy](https://github.com/Space-C0wboy). Yard Mastery and the Yard Mastery app belong to their
-owners. MIT licensed, see [LICENSE](LICENSE). API notes: [docs/api.md](docs/api.md).
+Download diagnostics from the integration page to attach to an issue. They include the stored data and change log with personal information redacted: email, password, token, names, address, coordinates and lawn polygons, user id, soil-test barcode and lab ids, tracking details, and photo links.
+
+> [!NOTE]
+> Please still glance through diagnostics before posting them.
+
+---
 
 ## Development
 
-Run tests: `bash scripts/test.sh`. Regenerate fixtures: `python -I scripts/make_fixtures.py <research_dir> tests/fixtures`.
+```bash
+bash scripts/test.sh
+```
+
+Tests run in Docker (Python 3.14). API notes are in [docs/api.md](docs/api.md).
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE). Yard Mastery and the Yard Mastery app belong to their owners.
