@@ -75,8 +75,8 @@ real entries (activity-only days have no product applications), so parse defensi
 
 ## Write endpoints
 
-All **from code, not yet called** against a real account. Treat the shapes as unconfirmed until they have been
-exercised live.
+Rows marked **verified** were exercised against a real account (date in brackets). The others are **from code, not yet
+called** — treat their shapes as unconfirmed until they have been exercised live.
 
 | Endpoint | Body |
 |---|---|
@@ -85,9 +85,9 @@ exercised live.
 | `DELETE /v1/journal/entry/{id}` | none |
 | `POST /v1/journal/entry/image?date=YYYY-MM-DD` | multipart `file` (jpg); returns the entry's attachments |
 | `DELETE /v1/journal/entry/image/{id}` | path from code; method to confirm (not used by the integration) |
-| `POST /v1/reminder` | `{createDate, detail, dueDate}` -- `detail` is HTML, `dueDate` is `YYYY-MM-DD` |
-| `PUT /v1/reminder` | the reminder object with its `id`, changed `detail` / `dueDate` |
-| `PUT /v1/reminder/{id}/dismiss` | none (the app warns this cannot be undone) |
+| `POST /v1/reminder` | **verified (2026-10-19)** `{createDate, detail, dueDate}` -- `detail` is HTML (`<p>text</p>`), `dueDate` is `YYYY-MM-DD`. Returns `{id, title, detail, createDate, dueDate, dismissDate}`; `title` comes back `null` and the app displays `detail` |
+| `PUT /v1/reminder` | **verified (2026-10-19)** the reminder object with its `id`, changed `detail` / `dueDate`; returns the updated object |
+| `PUT /v1/reminder/{id}/dismiss` | **verified (2026-10-19)** no body; empty response. The reminder disappears from the calendar search (the app warns this cannot be undone) |
 
 The integration never calls admin endpoints (`/v2/admin/*`, `/v1/property`, banners), the cart, "Buy All",
 Shopify, or account/settings writes.
