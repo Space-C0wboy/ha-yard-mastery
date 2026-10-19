@@ -179,7 +179,7 @@ def _last_application_attrs(data: YmData, latest: dict) -> dict:
     if entry is None:
         return {}
     return {
-        "products": [{"product": a.product_name, "rate": a.rate} for a in entry.applications],
+        "products": [{"product": a.product_name, "amount": a.rate} for a in entry.applications],
         "soil_temp": entry.soil_temp,
         "soil_temp_unit": entry.temp_unit,
         "areas": list(entry.segments),

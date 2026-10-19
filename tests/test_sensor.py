@@ -63,6 +63,7 @@ async def test_last_application(hass, load_entry):
     state = hass.states.get("sensor.yard_mastery_last_application")
     assert state.state == "2026-10-19"
     assert len(state.attributes["products"]) == 3
+    assert {"product": "Flagship", "amount": 2.8} in state.attributes["products"]
     assert state.attributes["soil_temp"] == 62.0
     assert hass.states.get("sensor.yard_mastery_last_journal_entry").state == "2026-10-19"
 
