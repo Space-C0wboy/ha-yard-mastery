@@ -141,7 +141,7 @@
     },
     "set_item_status": {
       "name": "Set program item status",
-      "description": "Mark program items done, skipped or not done.",
+      "description": "Mark program items done, skipped or not done. Done and not done go through the journal, as ticking an item in the app does.",
       "fields": {
         "config_entry_id": {
           "name": "Account",
@@ -149,7 +149,7 @@
         },
         "status": {
           "name": "Status",
-          "description": "New status of the items."
+          "description": "done logs the item on a journal entry, not_done removes it from its journal entry or unskips it, skipped skips it."
         },
         "items": {
           "name": "Item IDs",
@@ -162,6 +162,14 @@
         "window": {
           "name": "Window",
           "description": "current (default), next, a window name or its start date (YYYY-MM-DD)."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Journal date when setting items to done. Defaults to today."
+        },
+        "amount": {
+          "name": "Amount",
+          "description": "Total amount applied over the whole lawn, for done with a single item. Defaults to the recommended amount."
         }
       }
     },

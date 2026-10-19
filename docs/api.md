@@ -80,7 +80,7 @@ called** — treat their shapes as unconfirmed until they have been exercised li
 
 | Endpoint | Body |
 |---|---|
-| `PUT /v1/dlux/user-bundle-item/change-status` | `{bundleItemIds: [int], status}`, status one of `CREATED`, `COMPLETED`, `SKIPPED` |
+| `PUT /v1/dlux/user-bundle-item/change-status` | `{bundleItemIds: [int], status}`. The app sends only `SKIPPED` (skip, skip all -- never for a completed item) and `CREATED` (unskip, unskip all -- only skipped items). **Verified (2026-10-19):** `CREATED` on a completed item returns an empty 200 and changes nothing. Done / not done are not statuses you set -- see below |
 | `POST /v2/journal/entry` | the full journal-entry object as `GET /v3/journal/entry` returns it, with `entryDate` as `YYYY-MM-DD`, `bundleDetails: null` and `product.measure: null` on each product application. The app sends the existing `id` when editing. Linking an application to `bundleItemIds` is what marks a program item done in the app |
 | `DELETE /v1/journal/entry/{id}` | none |
 | `POST /v1/journal/entry/image?date=YYYY-MM-DD` | multipart `file` (jpg); returns the entry's attachments |
@@ -88,6 +88,26 @@ called** — treat their shapes as unconfirmed until they have been exercised li
 | `POST /v1/reminder` | **verified (2026-10-19)** `{createDate, detail, dueDate}` -- `detail` is HTML (`<p>text</p>`), `dueDate` is `YYYY-MM-DD`. Returns `{id, title, detail, createDate, dueDate, dismissDate}`; `title` comes back `null` and the app displays `detail` |
 | `PUT /v1/reminder` | **verified (2026-10-19)** the reminder object with its `id`, changed `detail` / `dueDate`; returns the updated object |
 | `PUT /v1/reminder/{id}/dismiss` | **verified (2026-10-19)** no body; empty response. The reminder disappears from the calendar search (the app warns this cannot be undone) |
+
+### Done and not done go through the journal
+
+A program item is done because a journal entry has a product application whose `bundleItemIds` contains the item's id;
+the item then reports `COMPLETED` with that entry's date as `journalEntryDate`. From the app (4.00.05) code:
+
+- **Tick (complete):** the app builds an application from the item's product with `bundleItemIds: [itemId]` and merges
+  it into the entry for today (the window's end date when the window has expired), then the person saves the entry
+  (`POST /v2/journal/entry`). An application already on that day for the same product (or, in the app, the same
+  taxonomy) gets the id added to its `bundleItemIds` instead.
+- **Un-tick (uncomplete / unapply):** for each item, the entry for its `journalEntryDate` (fallback: the window's end
+  date) is loaded, the item id is removed from the matching application's `bundleItemIds`, and an application left
+  with no ids is removed. The app also strips the notes it wrote when completing (`Completed <window>` /
+  `Completing <window> - <item>`). If the entry is then empty -- no applications, activities, attachments, lawn
+  segments, name or note text -- the app deletes it (`DELETE /v1/journal/entry/{id}`) without asking; otherwise the
+  person saves it.
+- **Delete an entry:** deleting an entry with linked applications uncompletes those items (the app warns about it).
+
+The integration's `set_item_status` follows this: `done` posts the entry, `not_done` saves or deletes it, and only
+skip / unskip use `change-status`. It does not strip notes from the entry body.
 
 The integration never calls admin endpoints (`/v2/admin/*`, `/v1/property`, banners), the cart, "Buy All",
 Shopify, or account/settings writes.

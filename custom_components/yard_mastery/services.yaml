@@ -50,6 +50,14 @@ set_item_status:
         text:
           multiple: true
     window: *window
+    date: *date
+    amount:
+      selector:
+        number:
+          min: 0
+          max: 10000
+          step: 0.01
+          mode: box
 log_activity:
   fields:
     config_entry_id: *entry

@@ -19,6 +19,7 @@ from .writes import (
     area,
     build_journal_entry,
     ensure_writes_allowed,
+    entry_is_empty,
     read,
     reminder_create,
     reminder_dismiss,
@@ -27,10 +28,12 @@ from .writes import (
     resolve_product,
     resolve_window,
     run_write,
+    unlink_bundle_item,
+    window_of,
 )
 
 ACTIVITIES = ["mow", "edge", "aerate", "dethatch", "blow", "trim"]
-STATUSES = {"done": "COMPLETED", "skipped": "SKIPPED", "not_done": "CREATED"}
+STATUSES = ["done", "skipped", "not_done"]
 PHOTO_ROOTS = ("/media",)  # plus the config directory
 
 ENTRY = {vol.Optional("config_entry_id"): cv.string}
@@ -59,10 +62,12 @@ SCHEMAS: dict[str, vol.Schema] = {
         vol.All(
             {
                 **ENTRY,
-                vol.Required("status"): vol.In(list(STATUSES)),
+                vol.Required("status"): vol.In(STATUSES),
                 vol.Optional("items"): vol.All(cv.ensure_list, [cv.positive_int]),
                 vol.Optional("products"): NAMES,
                 vol.Optional("window"): cv.string,
+                vol.Optional("date"): cv.date,
+                vol.Optional("amount"): vol.Coerce(float),
             },
             cv.has_at_least_one_key("items", "products"),
             _items_alone,
@@ -175,15 +180,16 @@ async def _save_journal(
     kind: str,
     detail: dict,
     day: date,
-    applications: Callable[[float | None], list[dict]] | None = None,
+    applications: Callable[[float | None, dict | None], list[dict]] | None = None,
     default_soil_temp: float | None = None,
     **changes: Any,
 ) -> Any:
     """GET the day's entry, merge the changes in and POST it back.
 
     `applications` is built from the entry's lawn size (the existing entry's lawnSqFt, else the yard's), since
-    appliedRate is the total amount spread over that area. `default_soil_temp` is used when no soil_temp is
-    given and the day has no saved entry with a temperature of its own.
+    appliedRate is the total amount spread over that area, and the day's entry as fetched (or None).
+    `default_soil_temp` is used when no soil_temp is given and the day has no saved entry with a temperature of
+    its own.
     """
     lawn = lawn_square_feet(coordinator.data.yard)
 
@@ -198,7 +204,7 @@ async def _save_journal(
         body = build_journal_entry(
             existing,
             day,
-            applications=applications(entry_lawn) if applications else None,
+            applications=applications(entry_lawn, existing) if applications else None,
             lawn_sq_ft=lawn,
             **{**changes, "soil_temp": soil_temp},
         )
@@ -230,7 +236,7 @@ async def _log_application(coordinator: YmCoordinator, call: ServiceCall) -> Any
             )
         planned = [(_item_product(window, i), None, i.rate, i.coverage_sq_ft, [i.id]) for i in items]
 
-    def applications(lawn: float | None) -> list[dict]:
+    def applications(lawn: float | None, existing: dict | None) -> list[dict]:
         built = []
         for product, amount, rate, coverage, ids in planned:
             if amount is None:
@@ -260,19 +266,164 @@ async def _log_application(coordinator: YmCoordinator, call: ServiceCall) -> Any
     )
 
 
+def _outcome(item: WindowItem, action: str, **extra: Any) -> dict:
+    return {"item": item.id, "product": item.product_name, "action": action, **extra}
+
+
+def _status_detail(status: str, items: list[WindowItem], **extra: Any) -> dict:
+    return {
+        "status": status.replace("_", " "),
+        "items": [i.id for i in items],
+        "products": [i.product_name for i in items],
+        **extra,
+    }
+
+
 async def _set_item_status(coordinator: YmCoordinator, call: ServiceCall) -> Any:
-    items = resolve_items(
+    """done/not done go through the journal (an item is done when an application links it); skip via change-status."""
+    status = call.data["status"]
+    amount = call.data.get("amount")
+    if status != "done" and ("date" in call.data or amount is not None):
+        raise ServiceValidationError("date and amount are only used when setting items to done")
+    found = resolve_items(
         coordinator.data,
         item_ids=call.data.get("items"),
         products=call.data.get("products"),
         window=call.data.get("window"),
     )
-    status = STATUSES[call.data["status"]]
-    ids = [i.id for i in items]
-    detail = {"status": status, "items": ids, "products": [i.product_name for i in items]}
-    return await run_write(
-        coordinator, "set_item_status", detail, lambda: coordinator.client.set_item_status(ids, status)
+    items = list({i.id: i for i in found}.values())
+    if amount is not None and len(items) != 1:
+        raise ServiceValidationError("Give an amount only when setting a single item to done")
+    if status == "skipped":
+        return await _skip_items(coordinator, items)
+    if status == "not_done":
+        return await _undo_items(coordinator, items)
+    return await _complete_items(coordinator, call, items, amount)
+
+
+async def _skip_items(coordinator: YmCoordinator, items: list[WindowItem]) -> dict:
+    for item in items:
+        if item.status == "COMPLETED":
+            when = f" on {item.journal_date.isoformat()}" if item.journal_date else ""
+            raise ServiceValidationError(f"{item.product_name} is logged as done{when}; set it to not_done first")
+    todo = [i for i in items if i.status != "SKIPPED"]
+    if todo:
+        ids = [i.id for i in todo]
+        await run_write(
+            coordinator,
+            "set_item_status",
+            _status_detail("skipped", todo),
+            lambda: coordinator.client.set_item_status(ids, "SKIPPED"),
+        )
+    return {
+        "items": [
+            _outcome(i, "skipped") if i in todo else _outcome(i, "unchanged", reason="already skipped") for i in items
+        ]
+    }
+
+
+async def _undo_items(coordinator: YmCoordinator, items: list[WindowItem]) -> dict:
+    """Unskip skipped items (change-status CREATED); unlink done items from their journal entry (the app's unapply)."""
+    outcomes = {
+        i.id: _outcome(i, "unchanged", reason="already not done" if i.status == "CREATED" else f"status is {i.status}")
+        for i in items
+    }
+    skipped = [i for i in items if i.status == "SKIPPED"]
+    by_day: dict[date, list[WindowItem]] = {}
+    for item in (i for i in items if i.status == "COMPLETED"):
+        if item.journal_date is None:
+            raise ServiceValidationError(
+                f"Yard Mastery gives no journal date for {item.product_name}; change it in the app"
+            )
+        by_day.setdefault(item.journal_date, []).append(item)
+
+    # Read and check every entry before writing anything.
+    entries: dict[date, dict] = {}
+    for day, day_items in by_day.items():
+        raw = await read(coordinator, lambda day=day: coordinator.client.journal_entry(day))
+        entry = raw if isinstance(raw, dict) and raw.get("id") is not None else None
+        for item in day_items:
+            unlinked, linked = unlink_bundle_item(entry, item.id) if entry else (None, False)
+            if not linked:
+                raise ServiceValidationError(
+                    f"The {day.isoformat()} journal entry has no application linked to {item.product_name}; "
+                    "change it in the app"
+                )
+            entry = unlinked
+        entries[day] = entry
+    if not skipped and not entries:
+        return {"items": list(outcomes.values())}
+
+    async def change() -> None:
+        if skipped:
+            await coordinator.client.set_item_status([i.id for i in skipped], "CREATED")
+            for item in skipped:
+                outcomes[item.id] = _outcome(item, "unskipped")
+        for day, entry in entries.items():
+            if entry_is_empty(entry):
+                await coordinator.client.delete_journal_entry(entry["id"])
+                coordinator.store.drop(f"journal:{day.isoformat()}")
+                result = "deleted"
+            else:
+                await coordinator.client.save_journal_entry(build_journal_entry(entry, day))
+                result = "saved"
+            for item in by_day[day]:
+                outcomes[item.id] = _outcome(item, "removed", date=day.isoformat(), journal_entry=result)
+
+    changed = [*skipped, *(i for day_items in by_day.values() for i in day_items)]
+    await run_write(coordinator, "set_item_status", _status_detail("not_done", changed), change)
+    return {"items": list(outcomes.values())}
+
+
+async def _complete_items(
+    coordinator: YmCoordinator, call: ServiceCall, items: list[WindowItem], amount: float | None
+) -> dict:
+    """Log the items on a journal entry with applications linked to them, as ticking them in the app does."""
+    data = coordinator.data
+    day = _day(call)
+    outcomes = {
+        i.id: _outcome(i, "unchanged", reason=f"already done on {i.journal_date}" if i.journal_date else "already done")
+        for i in items
+    }
+    todo = [i for i in items if i.status != "COMPLETED"]
+    if not todo:
+        return {"items": list(outcomes.values())}
+    planned = [(i, _item_product(window_of(data, i.id), i)) for i in todo]
+
+    def applications(lawn: float | None, existing: dict | None) -> list[dict]:
+        logged = {
+            (a.get("product") or {}).get("id"): a.get("appliedRate")
+            for a in (existing or {}).get("productApplications") or []
+            if isinstance(a, dict)
+        }
+        built = []
+        for item, product in planned:
+            total = amount
+            if total is None and product.get("id") in logged:
+                # Already on that day's entry: link it and keep the amount recorded there.
+                outcomes[item.id] = _outcome(item, "logged", date=day.isoformat(), amount=logged[product.get("id")])
+            else:
+                if total is None:
+                    total = total_amount(item.rate, item.coverage_sq_ft, lawn)
+                if total is None:
+                    raise ServiceValidationError(
+                        f"Yard Mastery has no application rate for {item.product_name} or the lawn size is unknown; "
+                        "give the amount applied"
+                    )
+                outcomes[item.id] = _outcome(item, "logged", date=day.isoformat(), amount=total)
+            built.append({"appliedRate": total, "bundleItemIds": [item.id], "product": product})
+        return built
+
+    await _save_journal(
+        coordinator,
+        "set_item_status",
+        _status_detail("done", todo, date=day.isoformat()),
+        day,
+        applications=applications,
+        default_soil_temp=data.soil_temp.get("soilTemp") if day == dt_util.now().date() else None,
+        temp_unit=data.soil_temp.get("soilTempUnit") or "F",
     )
+    return {"items": list(outcomes.values())}
 
 
 async def _log_activity(coordinator: YmCoordinator, call: ServiceCall) -> Any:

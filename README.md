@@ -131,7 +131,7 @@ With **Allow changes** on, you can create, edit and delete **reminders** from th
 | Action | What it does |
 |--------|--------------|
 | `yard_mastery.log_application` | Create or update the journal entry for a date (default today). Merges with an entry already on that day — existing applications, activities and photos are kept. |
-| `yard_mastery.set_item_status` | Mark program items `done`, `skipped` or `not_done`, by `items` (ids) or by `products` in a `window`. |
+| `yard_mastery.set_item_status` | Mark program items `done`, `skipped` or `not_done`, by `items` (ids) or by `products` in a `window`. See [below](#set_item_status). |
 | `yard_mastery.log_activity` | Add `mow`, `edge`, `aerate`, `dethatch`, `blow` or `trim` to a date's entry, with optional `areas` and `notes`. |
 | `yard_mastery.add_photo` | Attach a photo to a date's entry, from a camera or image entity (`entity_id`) or a `file`. |
 | `yard_mastery.delete_journal_entry` | Delete an entry. A `date` or `entry_id` is required — there is no default. |
@@ -150,6 +150,20 @@ With **Allow changes** on, you can create, edit and delete **reminders** from th
 
 > [!NOTE]
 > A `file` for `add_photo` must be under `/config` or `/media` and allowed by Home Assistant — its folder must be in [`allowlist_external_dirs`](https://www.home-assistant.io/integrations/homeassistant/#allowlist_external_dirs). Media folders are allowed by default.
+
+### `set_item_status`
+
+In the app an item is **done** because a journal entry has an application linked to it, so `done` and `not_done` work through the journal, the way ticking and un-ticking an item in the app does:
+
+| Status | Open item | Skipped item | Done item |
+|--------|-----------|--------------|-----------|
+| `done` | Logs it on the `date`'s entry (default today), linked to the item, at the recommended whole-lawn amount or `amount` | Same as an open item | Nothing to change |
+| `skipped` | Skips it | Nothing to change | Refused — set it to `not_done` first |
+| `not_done` | Nothing to change | Unskips it | Removes its application from the entry it was logged on; other applications, activities and photos stay |
+
+- `amount` is the total over the whole lawn (as for `log_application`) and only works when one item is targeted. If that day's entry already has the product, `done` links the item to it and keeps the amount recorded there.
+- If `not_done` leaves an entry with nothing in it — no applications, activities, photos, areas, title or note text — the entry is deleted, as the app does. Otherwise it is saved.
+- `date` and `amount` are only for `done`. The response lists what happened to each item.
 
 ### Example: log what you spread today
 
@@ -186,6 +200,16 @@ action: yard_mastery.set_item_status
 data:
   status: skipped
   products: [Prodiamine]
+```
+
+### Example: mark a program item done yesterday
+
+```yaml
+action: yard_mastery.set_item_status
+data:
+  status: done
+  products: [Flagship]
+  date: "2026-10-18"
 ```
 
 ### Example: a heads-up the evening before a window opens

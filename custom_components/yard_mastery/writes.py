@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import html
+import re
 from collections.abc import Awaitable, Callable, Iterable
 from datetime import date
 from typing import TYPE_CHECKING, Any
@@ -31,6 +32,7 @@ _MESSAGES: dict[str, str | Callable[[dict], str]] = {
     "update_reminder": "updated reminder {reminder_id}",
     "dismiss_reminder": "dismissed reminder {reminder_id}",
 }
+_TAGS = re.compile(r"<[^>]*>")
 
 
 def ensure_writes_allowed(entry: ConfigEntry) -> None:
@@ -90,6 +92,11 @@ def _all_windows(data: YmData) -> dict[int, Window]:
         if window is not None:
             windows[window.id] = window
     return windows
+
+
+def window_of(data: YmData, item_id: int) -> Window | None:
+    """The window holding program item `item_id`."""
+    return next((w for w in _all_windows(data).values() if any(i.id == item_id for i in w.items)), None)
 
 
 def resolve_window(data: YmData, window: str | None) -> Window:
@@ -266,6 +273,35 @@ def build_journal_entry(
         entry["tempUnit"] = temp_unit or entry.get("tempUnit") or "F"
     entry["bundleDetails"] = None
     return entry
+
+
+def unlink_bundle_item(existing: dict, item_id: int) -> tuple[dict, bool]:
+    """`existing` with program item `item_id` unlinked, and whether any application linked it. Pure.
+
+    As the app's unapply: the id leaves each application's bundleItemIds, and an application left with no ids
+    is removed. Everything else in the entry is kept.
+    """
+    entry = copy.deepcopy(existing)
+    apps = entry.get("productApplications") if isinstance(entry.get("productApplications"), list) else []
+    kept, found = [], False
+    for app in apps:
+        ids = app.get("bundleItemIds") if isinstance(app, dict) else None
+        if isinstance(ids, list) and item_id in ids:
+            found = True
+            rest = [i for i in ids if i != item_id]
+            if not rest:
+                continue
+            app["bundleItemIds"] = rest
+        kept.append(app)
+    entry["productApplications"] = kept
+    return entry, found
+
+
+def entry_is_empty(entry: dict) -> bool:
+    """The app's JournalEntry.isEmpty: no applications, activities, photos, areas, title or note text."""
+    text = html.unescape(_TAGS.sub("", str(entry.get("body") or ""))).strip()
+    keys = ("productApplications", "activities", "attachments", "lawnSegments", "name")
+    return not text and not any(entry.get(key) for key in keys)
 
 
 # ---- reminders -------------------------------------------------------------
