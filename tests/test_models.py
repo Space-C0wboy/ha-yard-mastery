@@ -12,6 +12,7 @@ from custom_components.yard_mastery.models import (
     parse_soil_test,
     parse_window,
     season_totals,
+    soil_history,
     whole_lawn_amount,
 )
 
@@ -186,3 +187,53 @@ def test_journal_activities_as_objects_or_names():
         {"id": 1, "entryDate": "2026-07-04", "activities": [{"id": 1, "name": "Mow"}, "Edge", {"id": 9}]}
     )
     assert entry.activities == ("Mow", "Edge")
+
+
+def _soil(report=None, **dash):
+    base = {**fixture("soil_dashboard")["completed"][0], **dash}
+    return parse_soil_test(base, fixture("soil_report") if report is None else report, None)
+
+
+def test_parse_soil_test_ranges_and_status():
+    soil = _soil()
+    assert soil.lab_date == date(2026, 10, 6)
+    assert soil.density == 54.0
+    k = soil.nutrients["ppm_k"]
+    assert (k.value, k.status, k.optimal) == (33.88, "low", False)
+    assert soil.nutrients["ppm_ca"].status == "high"
+    assert soil.nutrients["ppm_cu"].status == "optimal"
+    b = soil.nutrients["ppm_b"]
+    assert (b.low, b.high) == (0.22, 0.66)
+    nh4 = soil.nutrients["ppm_nh4-n"]
+    assert (nh4.low, nh4.high) == (None, None)
+
+
+def test_soil_history_one_test():
+    hist = soil_history([_soil()])
+    assert len(hist) == 1
+    h = hist[0]
+    assert h["date"] == "2026-10-06"
+    assert h["density"] == 54.0
+    assert h["nutrients"]["ph"]["value"] == 6.39
+    assert h["nutrients"]["k"] == {"value": 33.88, "low": h["nutrients"]["k"]["low"], "high": h["nutrients"]["k"]["high"], "status": "low"}
+    assert h["nutrients"]["k"]["low"] is not None
+    assert set(h["nutrients"]) >= {"ph", "n", "p", "k", "ca", "mg", "s", "fe", "mn", "zn", "b", "cu", "na", "nh4-n", "no3-n"}
+
+
+def test_soil_history_orders_and_skips_incomplete():
+    old_report = copy.deepcopy(fixture("soil_report"))
+    old_report["report"]["lab_date"] = "2025-09-01T10:00:00"
+    for nut in old_report["report"]["results"]["ppm"]["samples"][0]["sample_nutrients"]:
+        if nut["nutrient_abbr"] == "ph":
+            nut["value"] = 6.1
+    new = _soil()
+    old = _soil(old_report, barcode="YM00002")
+    pending = _soil(barcode="YM00003", statusDisplayName="Processing")
+    hist = soil_history([new, pending, old])
+    assert [h["date"] for h in hist] == ["2025-09-01", "2026-10-06"]
+    assert hist[0]["nutrients"]["ph"]["value"] == 6.1
+
+
+def test_soil_history_has_no_barcode():
+    import json
+    assert "YM0000" not in json.dumps(soil_history([_soil()]))

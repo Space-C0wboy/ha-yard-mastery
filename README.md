@@ -42,7 +42,7 @@ One device, **Yard Mastery**, with the program type as its model.
 |--------|-----------|-------|-------|
 | Soil temperature | `sensor.yard_mastery_soil_temperature` | °F (or °C) | 24-hour average for your ZIP |
 | Program | `sensor.yard_mastery_program` | `STILP`, `DLUX`, … | Lawn type, square feet, product preference and program details as attributes |
-| Current window | `sensor.yard_mastery_current_window` | Window name | Start, end, description and each product: rate, unit, amount for your lawn, N-P-K, status |
+| Current window | `sensor.yard_mastery_current_window` | Window name | Start, end, description and each product: item `id` (for `set_item_status`), rate, unit, amount for your lawn, N-P-K, status |
 | Current window progress | `sensor.yard_mastery_current_window_progress` | % | Steps, completed, skipped, remaining |
 | Next window | `sensor.yard_mastery_next_window` | Window name | Same attributes as the current window |
 | Next window start | `sensor.yard_mastery_next_window_start` | Date | — |
@@ -52,10 +52,10 @@ One device, **Yard Mastery**, with the program type as its model.
 | Last journal entry | `sensor.yard_mastery_last_journal_entry` | Date | Name, notes, activities, photo count |
 | Applications this year | `sensor.yard_mastery_applications_this_year` | Count | — |
 | Nitrogen this year | `sensor.yard_mastery_nitrogen_this_year` | lb N / 1,000 sq ft | Worked out from what you logged; P and K as attributes |
-| Soil test | `sensor.yard_mastery_soil_test` | Test status | Test date, days old, recommended products |
+| Soil test | `sensor.yard_mastery_soil_test` | Test status | Test date, days old, recommended products, and `history`: every completed test, oldest first, as `{date, density, nutrients: {abbr: {value, low, high, status}}}` (`status` is `low`, `optimal` or `high`) |
 | Calendar | `calendar.yard_mastery` | On while an event is happening | See [Calendar](#calendar) |
 
-**Diagnostic entities:** one sensor per measured soil-test value (pH, N, P, K and organic matter are enabled; the rest are disabled by default), one per lawn area (square feet), Dug AI turns, last sync, and **app version valid**.
+**Diagnostic entities:** one sensor per measured soil-test value (pH, N, P, K and organic matter are enabled; the rest are disabled by default); each carries `optimal` and `status` (`low` / `optimal` / `high`), one per lawn area (square feet), Dug AI turns, last sync, and **app version valid**.
 
 > [!NOTE]
 > **Nitrogen** only counts granular products (rates by weight). Liquid products are rated by volume and the app gives no density, so they are listed under the `not_counted` attribute instead of guessed.

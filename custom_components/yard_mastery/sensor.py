@@ -19,7 +19,7 @@ from homeassistant.util import dt as dt_util
 
 from .coordinator import YmConfigEntry, YmCoordinator, YmData
 from .entity import YmEntity
-from .models import SoilTest, Window, lawn_square_feet, season_totals, whole_lawn_amount
+from .models import SoilTest, Window, lawn_square_feet, season_totals, soil_history, whole_lawn_amount
 
 PARALLEL_UPDATES = 0
 
@@ -44,6 +44,7 @@ def _window_items(window: Window, square_feet: Any) -> list[dict]:
     sq_ft = square_feet if isinstance(square_feet, (int, float)) and not isinstance(square_feet, bool) else None
     return [
         {
+            "id": item.id,
             "product": item.product_name,
             "type": item.product_type,
             "material": item.material_type,
@@ -224,6 +225,7 @@ def _soil_test_attrs(data: YmData, latest: dict) -> dict:
         "days_old": (_today() - test.created).days if test.created else None,
         "informs_program": test.informs_program,
         "recommended_products": list(test.recommended),
+        "history": soil_history(data.snapshot.soil_tests.values()),
     }
 
 
@@ -403,7 +405,7 @@ class YmNutrientSensor(YmEntity, SensorEntity):
             return None
         group = self._nutrient.partition("_")[0]
         depth = selected_soil_test(self.coordinator.data).nutrients.get(f"{group}_depth")
-        return {"optimal": nutrient.optimal, "depth": depth.value if depth else None}
+        return {"optimal": nutrient.optimal, "status": nutrient.status, "depth": depth.value if depth else None}
 
 
 class YmSegmentSensor(YmEntity, SensorEntity):

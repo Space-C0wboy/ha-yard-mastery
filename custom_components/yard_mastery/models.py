@@ -93,6 +93,9 @@ class Nutrient:
     value: float | str
     unit: str | None
     optimal: bool | None
+    low: float | None = None
+    high: float | None = None
+    status: str | None = None  # low / optimal / high, from the lab's colour code
 
 
 @dataclass(frozen=True)
@@ -105,6 +108,8 @@ class SoilTest:
     nutrients: dict[str, Nutrient]
     recommended: tuple[str, ...]
     raw: dict = field(repr=False, compare=False)
+    lab_date: date | None = None
+    density: float | None = None
 
 
 def _date(value: Any) -> date | None:
@@ -323,7 +328,12 @@ def parse_segments(raw: list | None) -> list[Segment]:
     return segments
 
 
-def _flatten_sample(group: str, sample: dict, out: dict[str, Nutrient]) -> None:
+_COLOR_STATUS = {"red": "low", "green": "optimal", "blue": "high"}
+
+
+def _flatten_sample(
+    group: str, sample: dict, out: dict[str, Nutrient], ranges: dict[str, tuple] | None = None
+) -> None:
     for name, value in sample.items():
         if name == "recommendation":
             continue
@@ -336,8 +346,15 @@ def _flatten_sample(group: str, sample: dict, out: dict[str, Nutrient]) -> None:
                     continue
                 key = f"{group}_{nut['nutrient_abbr']}".lower()
                 color = nut.get("color_code")
+                low, high = (ranges or {}).get(nut["nutrient_abbr"].lower(), (None, None))
                 out[key] = Nutrient(
-                    key, nut["value"], group, None if color is None else color == "green"
+                    key,
+                    nut["value"],
+                    group,
+                    None if color is None else color == "green",
+                    low,
+                    high,
+                    _COLOR_STATUS.get(color),
                 )
         elif isinstance(value, dict):
             for sub, subval in value.items():
@@ -353,13 +370,21 @@ def parse_soil_test(
     dashboard_item: dict, report: dict | None, stilp: dict | list | None
 ) -> SoilTest:
     nutrients: dict[str, Nutrient] = {}
+    density: float | None = None
     results = ((report or {}).get("report") or {}).get("results") or {}
     for group, body in results.items():
         if not isinstance(body, dict):
             continue
+        ranges = {
+            str(r["nutrient_abbr"]).lower(): (_num(r.get("low")), _num(r.get("high")))
+            for r in _list(body.get("available_ranges"))
+            if isinstance(r, dict) and r.get("nutrient_abbr")
+        }
         for sample in _list(body.get("samples")):
             if isinstance(sample, dict):
-                _flatten_sample(group, sample, nutrients)
+                _flatten_sample(group, sample, nutrients, ranges)
+                if density is None:
+                    density = _num(sample.get("density_score"))
     products = stilp.get("products") if isinstance(stilp, dict) else stilp
     recommended: list[str] = []
     for entry in _list(products):
@@ -375,7 +400,25 @@ def parse_soil_test(
         nutrients=nutrients,
         recommended=tuple(recommended),
         raw=report or dashboard_item,
+        lab_date=_date(((report or {}).get("report") or {}).get("lab_date")),
+        density=density,
     )
+
+
+def soil_history(tests: Iterable[SoilTest]) -> list[dict]:
+    """Every completed test, oldest first: lab date, density and each ppm sample nutrient. No barcodes."""
+    out = []
+    for test in tests:
+        if test.status.lower() != "completed":
+            continue
+        day = test.lab_date or test.created
+        nutrients = {
+            key.partition("_")[2]: {"value": n.value, "low": n.low, "high": n.high, "status": n.status}
+            for key, n in test.nutrients.items()
+            if key.startswith("ppm_") and n.unit == "ppm" and isinstance(n.value, (int, float))
+        }
+        out.append({"date": day.isoformat() if day else None, "density": test.density, "nutrients": nutrients})
+    return sorted(out, key=lambda h: h["date"] or "")
 
 
 def lawn_square_feet(yard: dict) -> float | None:

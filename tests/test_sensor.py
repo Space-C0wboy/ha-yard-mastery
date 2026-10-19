@@ -37,7 +37,7 @@ async def test_current_window(hass, load_entry):
     items = {i["product"]: i for i in state.attributes["items"]}
     assert items["Flagship"]["whole_lawn"] == 2.68  # 3.0 per 1000 on the measured 893 sq ft
     assert set(items["Flagship"]) == {
-        "product", "type", "material", "rate", "unit", "whole_lawn", "n", "p", "k", "status", "journal_date",
+        "id", "product", "type", "material", "rate", "unit", "whole_lawn", "n", "p", "k", "status", "journal_date",
     }
     assert items["Flagship"]["status"] == "COMPLETED"
     assert items["Flagship"]["journal_date"] == "2026-10-19"
@@ -152,3 +152,27 @@ async def test_soil_temperature_unit_follows_api(hass, load_entry):
     state = hass.states.get("sensor.yard_mastery_soil_temperature")
     assert state.attributes["unit_of_measurement"] == "°F"
     assert round(float(state.state)) == 63
+
+
+async def test_window_items_carry_ids(hass, load_entry):
+    await _load(hass, load_entry)
+    for name in ("current_window", "next_window"):
+        items = hass.states.get(f"sensor.yard_mastery_{name}").attributes["items"]
+        assert items and all(isinstance(i["id"], int) for i in items)
+    items = hass.states.get("sensor.yard_mastery_current_window").attributes["items"]
+    assert len({i["id"] for i in items}) == len(items) == 3
+
+
+async def test_soil_test_history_attr(hass, load_entry):
+    await _load(hass, load_entry)
+    attrs = hass.states.get("sensor.yard_mastery_soil_test").attributes
+    assert len(attrs["history"]) == 1
+    assert attrs["history"][0]["date"] == "2026-10-06"
+    assert attrs["history"][0]["nutrients"]["k"]["status"] == "low"
+    assert "YM0000" not in json.dumps(attrs["history"])
+
+
+async def test_nutrient_sensor_status_attr(hass, load_entry):
+    entry = await _load(hass, load_entry)
+    k = hass.states.get(_by_uid(hass, entry)["user-guid-1_soil_ppm_k"].entity_id)
+    assert (k.attributes["status"], k.attributes["optimal"]) == ("low", False)
