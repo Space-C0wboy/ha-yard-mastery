@@ -34,6 +34,26 @@ A [HACS](https://hacs.xyz/) custom integration for the [Yard Mastery](https://ya
 
 ---
 
+## Screenshots
+
+**The device and its sensors**
+
+<img src="docs/images/device.png" alt="Yard Mastery device page with its sensors" width="720">
+
+**Your program on the calendar** — each treatment window spans its dates, and journal entries show on the day you logged them. Open a window to see every product with its rate and the amount for your lawn.
+
+<img src="docs/images/calendar.png" alt="Home Assistant calendar showing Yard Mastery treatment windows" width="720">
+
+<img src="docs/images/calendar-event.png" alt="A treatment window's details: products, rates and amounts for the lawn" width="420">
+
+**Example dashboard** — not part of the integration. A custom dashboard built on its entities: the current window as a checklist, a log button, and one chart per soil-test nutrient against the lab's optimal range.
+
+<img src="docs/images/dashboard-tablet.png" alt="Example tablet dashboard: window checklist, stats and soil-test charts" width="720">
+
+<img src="docs/images/dashboard-phone.png" alt="Example phone dashboard: window checklist, stats, next window and soil test" width="300">
+
+---
+
 ## Entities
 
 One device, **Yard Mastery**, with the program type as its model.
