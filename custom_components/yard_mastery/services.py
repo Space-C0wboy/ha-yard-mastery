@@ -1,4 +1,5 @@
 """Yard Mastery actions. Writes are refused unless the entry's "Allow changes" option is on."""
+
 from __future__ import annotations
 
 import pathlib
@@ -7,7 +8,13 @@ from datetime import date
 from typing import Any
 
 import voluptuous as vol
-from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse, callback
+from homeassistant.core import (
+    HomeAssistant,
+    ServiceCall,
+    ServiceResponse,
+    SupportsResponse,
+    callback,
+)
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.util import dt as dt_util
@@ -40,13 +47,16 @@ PHOTO_ROOTS = ("/media",)  # plus the config directory
 
 ENTRY = {vol.Optional("config_entry_id"): cv.string}
 NAMES = vol.All(cv.ensure_list, [cv.string])
-PRODUCT = vol.Schema({vol.Required("product"): cv.string, vol.Optional("amount"): vol.Coerce(float)})
+PRODUCT = vol.Schema(
+    {vol.Required("product"): cv.string, vol.Optional("amount"): vol.Coerce(float)}
+)
 
 
 def _items_alone(data: dict) -> dict:
     if data.get("items") and (data.get("products") or data.get("window")):
         raise vol.Invalid("Give either `items`, or `products` with an optional `window`")
     return data
+
 
 SCHEMAS: dict[str, vol.Schema] = {
     "log_application": vol.Schema(
@@ -79,7 +89,9 @@ SCHEMAS: dict[str, vol.Schema] = {
         {
             **ENTRY,
             vol.Optional("date"): cv.date,
-            vol.Required("activities"): vol.All(cv.ensure_list, [vol.In(ACTIVITIES)], vol.Length(min=1)),
+            vol.Required("activities"): vol.All(
+                cv.ensure_list, [vol.In(ACTIVITIES)], vol.Length(min=1)
+            ),
             vol.Optional("areas"): NAMES,
             vol.Optional("notes"): cv.string,
         }
@@ -97,11 +109,17 @@ SCHEMAS: dict[str, vol.Schema] = {
     ),
     "delete_journal_entry": vol.Schema(
         vol.All(
-            {**ENTRY, vol.Exclusive("date", "which"): cv.date, vol.Exclusive("entry_id", "which"): cv.positive_int},
+            {
+                **ENTRY,
+                vol.Exclusive("date", "which"): cv.date,
+                vol.Exclusive("entry_id", "which"): cv.positive_int,
+            },
             cv.has_at_least_one_key("date", "entry_id"),
         )
     ),
-    "create_reminder": vol.Schema({**ENTRY, vol.Required("date"): cv.date, vol.Required("title"): cv.string}),
+    "create_reminder": vol.Schema(
+        {**ENTRY, vol.Required("date"): cv.date, vol.Required("title"): cv.string}
+    ),
     "update_reminder": vol.Schema(
         {
             **ENTRY,
@@ -128,7 +146,9 @@ def _coordinator(hass: HomeAssistant, call: ServiceCall) -> YmCoordinator:
         return entries[0].runtime_data
     if not entries:
         raise ServiceValidationError("Yard Mastery is not set up or not loaded")
-    raise ServiceValidationError("Several Yard Mastery accounts are set up; choose one with config_entry_id")
+    raise ServiceValidationError(
+        "Several Yard Mastery accounts are set up; choose one with config_entry_id"
+    )
 
 
 def _respond(value: Any) -> dict:
@@ -143,7 +163,11 @@ def _day(call: ServiceCall) -> date:
 
 def _item_product(window: Window, item: WindowItem) -> dict:
     for raw in window.raw.get("bundleItems") or []:
-        if isinstance(raw, dict) and raw.get("id") == item.id and isinstance(raw.get("product"), dict):
+        if (
+            isinstance(raw, dict)
+            and raw.get("id") == item.id
+            and isinstance(raw.get("product"), dict)
+        ):
             return dict(raw["product"])
     return {"id": item.product_id, "name": item.product_name}
 
@@ -154,9 +178,12 @@ def _segments(coordinator: YmCoordinator, names: list[str] | None) -> list[dict]
     known = [s for s in raw if isinstance(s, dict)] if isinstance(raw, list) else []
     found = []
     for name in names or []:
-        match = next((s for s in known if str(s.get("name") or "").casefold() == name.strip().casefold()), None)
+        match = next(
+            (s for s in known if str(s.get("name") or "").casefold() == name.strip().casefold()),
+            None,
+        )
         if match is None:
-            raise ServiceValidationError(f"Yard Mastery has no lawn area \"{name}\"")
+            raise ServiceValidationError(f'Yard Mastery has no lawn area "{name}"')
         found.append(match)
     return found
 
@@ -172,7 +199,7 @@ def _activities(coordinator: YmCoordinator, names: list[str]) -> list[dict]:
         if match is None and name in by_name:
             match = {"id": by_name[name][1], "name": by_name[name][0]}
         if match is None:
-            raise ServiceValidationError(f"Yard Mastery has no activity \"{name}\"")
+            raise ServiceValidationError(f'Yard Mastery has no activity "{name}"')
         found.append(match)
     return found
 
@@ -200,7 +227,11 @@ async def _save_journal(
         existing = raw if isinstance(raw, dict) else None
         entry_lawn = area((existing or {}).get("lawnSqFt")) or lawn
         soil_temp = changes.get("soil_temp")
-        saved_temp = existing is not None and existing.get("id") is not None and existing.get("tempValue") is not None
+        saved_temp = (
+            existing is not None
+            and existing.get("id") is not None
+            and existing.get("tempValue") is not None
+        )
         if soil_temp is None and not saved_temp:
             soil_temp = default_soil_temp
         body = build_journal_entry(
@@ -227,7 +258,13 @@ async def _log_application(coordinator: YmCoordinator, call: ServiceCall) -> Any
         for wanted in products:
             product = await resolve_product(coordinator, wanted["product"])
             planned.append(
-                (product, wanted.get("amount"), product.get("applicationRate"), product.get("coverageSqFt"), None)
+                (
+                    product,
+                    wanted.get("amount"),
+                    product.get("applicationRate"),
+                    product.get("coverageSqFt"),
+                    None,
+                )
             )
     else:
         window = resolve_window(data, call.data.get("window"))
@@ -236,7 +273,9 @@ async def _log_application(coordinator: YmCoordinator, call: ServiceCall) -> Any
             raise ServiceValidationError(
                 f"Nothing is left to log in the Yard Mastery window {window.name}; name the products instead"
             )
-        planned = [(_item_product(window, i), None, i.rate, i.coverage_sq_ft, [i.id]) for i in items]
+        planned = [
+            (_item_product(window, i), None, i.rate, i.coverage_sq_ft, [i.id]) for i in items
+        ]
 
     def applications(lawn: float | None, existing: dict | None) -> list[dict]:
         built = []
@@ -307,7 +346,9 @@ async def _skip_items(coordinator: YmCoordinator, items: list[WindowItem]) -> di
     for item in items:
         if item.status == "COMPLETED":
             when = f" on {item.journal_date.isoformat()}" if item.journal_date else ""
-            raise ServiceValidationError(f"{item.product_name} is logged as done{when}; set it to not_done first")
+            raise ServiceValidationError(
+                f"{item.product_name} is logged as done{when}; set it to not_done first"
+            )
     todo = [i for i in items if i.status != "SKIPPED"]
     if todo:
         ids = [i.id for i in todo]
@@ -319,7 +360,10 @@ async def _skip_items(coordinator: YmCoordinator, items: list[WindowItem]) -> di
         )
     return {
         "items": [
-            _outcome(i, "skipped") if i in todo else _outcome(i, "unchanged", reason="already skipped") for i in items
+            _outcome(i, "skipped")
+            if i in todo
+            else _outcome(i, "unchanged", reason="already skipped")
+            for i in items
         ]
     }
 
@@ -327,7 +371,11 @@ async def _skip_items(coordinator: YmCoordinator, items: list[WindowItem]) -> di
 async def _undo_items(coordinator: YmCoordinator, items: list[WindowItem]) -> dict:
     """Unskip skipped items (change-status CREATED); unlink done items from their journal entry (the app's unapply)."""
     outcomes = {
-        i.id: _outcome(i, "unchanged", reason="already not done" if i.status == "CREATED" else f"status is {i.status}")
+        i.id: _outcome(
+            i,
+            "unchanged",
+            reason="already not done" if i.status == "CREATED" else f"status is {i.status}",
+        )
         for i in items
     }
     skipped = [i for i in items if i.status == "SKIPPED"]
@@ -380,13 +428,18 @@ async def _undo_items(coordinator: YmCoordinator, items: list[WindowItem]) -> di
                 await coordinator.client.save_journal_entry(build_journal_entry(entry, day))
             for item in by_day[day]:
                 outcomes[item.id] = _outcome(
-                    item, "removed", date=day.isoformat(), journal_entry="deleted" if empty else "saved"
+                    item,
+                    "removed",
+                    date=day.isoformat(),
+                    journal_entry="deleted" if empty else "saved",
                 )
 
         names = ", ".join(i.product_name for i in by_day[day])
         what = "deleted the entry, now empty" if empty else "saved the entry"
         step = f"removed {names} from the {day.isoformat()} journal entry ({what})"
-        steps.append((_status_detail("not_done", by_day[day], date=day.isoformat(), step=step), unlink))
+        steps.append(
+            (_status_detail("not_done", by_day[day], date=day.isoformat(), step=step), unlink)
+        )
     await run_write_steps(coordinator, "set_item_status", steps)
     return {"items": list(outcomes.values())}
 
@@ -432,7 +485,11 @@ async def _complete_items(
     data = coordinator.data
     day = _day(call)
     outcomes = {
-        i.id: _outcome(i, "unchanged", reason=f"already done on {i.journal_date}" if i.journal_date else "already done")
+        i.id: _outcome(
+            i,
+            "unchanged",
+            reason=f"already done on {i.journal_date}" if i.journal_date else "already done",
+        )
         for i in items
     }
     todo = [i for i in items if i.status != "COMPLETED"]
@@ -456,7 +513,9 @@ async def _complete_items(
                 )
             if total is None and product.get("id") in logged:
                 # Already on that day's entry: link it and keep the amount recorded there.
-                outcomes[item.id] = _outcome(item, "logged", date=day.isoformat(), amount=logged[product.get("id")])
+                outcomes[item.id] = _outcome(
+                    item, "logged", date=day.isoformat(), amount=logged[product.get("id")]
+                )
             else:
                 if total is None:
                     total = total_amount(item.rate, item.coverage_sq_ft, lawn)
@@ -487,7 +546,13 @@ async def _log_activity(coordinator: YmCoordinator, call: ServiceCall) -> Any:
     segments = _segments(coordinator, call.data.get("areas"))
     detail = {"date": day.isoformat(), "activities": [a.get("name") for a in activities]}
     return await _save_journal(
-        coordinator, "log_activity", detail, day, activities=activities, segments=segments, notes=call.data.get("notes")
+        coordinator,
+        "log_activity",
+        detail,
+        day,
+        activities=activities,
+        segments=segments,
+        notes=call.data.get("notes"),
     )
 
 
@@ -495,7 +560,9 @@ def _read_photo(hass: HomeAssistant, file: str) -> tuple[bytes, str]:
     """Read a photo under the config directory or /media that HA allows access to (runs in the executor)."""
     path = pathlib.Path(file).resolve()
     roots = [pathlib.Path(hass.config.path()).resolve(), *(pathlib.Path(r) for r in PHOTO_ROOTS)]
-    if not hass.config.is_allowed_path(str(path)) or not any(path.is_relative_to(root) for root in roots):
+    if not hass.config.is_allowed_path(str(path)) or not any(
+        path.is_relative_to(root) for root in roots
+    ):
         raise ServiceValidationError(f"{file} is not an allowed file under /config or /media")
     if not path.is_file():
         raise ServiceValidationError(f"{file} does not exist")
@@ -521,7 +588,10 @@ async def _add_photo(coordinator: YmCoordinator, call: ServiceCall) -> Any:
         filename, source = f"{object_id}.jpg", entity_id
     detail = {"date": day.isoformat(), "source": source}
     return await run_write(
-        coordinator, "add_photo", detail, lambda: coordinator.client.add_journal_photo(day, image, filename)
+        coordinator,
+        "add_photo",
+        detail,
+        lambda: coordinator.client.add_journal_photo(day, image, filename),
     )
 
 
@@ -539,7 +609,9 @@ async def _delete_journal_entry(coordinator: YmCoordinator, call: ServiceCall) -
                 raise ServiceValidationError(f"There is no Yard Mastery journal entry on {day}")
             detail["entry_id"] = target
         result = await coordinator.client.delete_journal_entry(target)
-        gone = day or next((d for d, e in coordinator.data.snapshot.journal.items() if e.id == target), None)
+        gone = day or next(
+            (d for d, e in coordinator.data.snapshot.journal.items() if e.id == target), None
+        )
         if gone is not None:
             coordinator.store.drop(f"journal:{gone.isoformat()}")
         return result
@@ -553,7 +625,10 @@ async def _create_reminder(coordinator: YmCoordinator, call: ServiceCall) -> Any
 
 async def _update_reminder(coordinator: YmCoordinator, call: ServiceCall) -> Any:
     return await reminder_update(
-        coordinator, call.data["reminder_id"], day=call.data.get("date"), title=call.data.get("title")
+        coordinator,
+        call.data["reminder_id"],
+        day=call.data.get("date"),
+        title=call.data.get("title"),
     )
 
 
@@ -602,5 +677,9 @@ def _handler(
 def async_setup_services(hass: HomeAssistant) -> None:
     for name, fn in HANDLERS.items():
         hass.services.async_register(
-            DOMAIN, name, _handler(name, fn), schema=SCHEMAS[name], supports_response=SupportsResponse.OPTIONAL
+            DOMAIN,
+            name,
+            _handler(name, fn),
+            schema=SCHEMAS[name],
+            supports_response=SupportsResponse.OPTIONAL,
         )

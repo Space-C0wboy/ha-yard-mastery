@@ -1,4 +1,5 @@
 """Gated writes: the option gate, item/product resolution, journal merge, logbook + change log + refresh."""
+
 from __future__ import annotations
 
 import copy
@@ -26,9 +27,11 @@ _MESSAGES: dict[str, str | Callable[[dict], str]] = {
     "log_activity": "logged {activities} for {date}",
     "add_photo": "added a photo to {date}",
     "delete_journal_entry": lambda d: (
-        f"deleted the journal entry for {d['date']}" if d.get("date") else f"deleted journal entry {d.get('entry_id')}"
+        f"deleted the journal entry for {d['date']}"
+        if d.get("date")
+        else f"deleted journal entry {d.get('entry_id')}"
     ),
-    "create_reminder": "created reminder \"{title}\" for {date}",
+    "create_reminder": 'created reminder "{title}" for {date}',
     "update_reminder": "updated reminder {reminder_id}",
     "dismiss_reminder": "dismissed reminder {reminder_id}",
 }
@@ -45,7 +48,7 @@ def _message(kind: str, detail: dict) -> str:
     template = _MESSAGES.get(kind)
     try:
         text = template(values) if callable(template) else template.format(**values)
-    except (KeyError, IndexError, AttributeError):
+    except KeyError, IndexError, AttributeError:
         text = kind.replace("_", " ")
     return f"Home Assistant {text}"
 
@@ -56,7 +59,9 @@ def _reauth(coordinator: YmCoordinator, err: YmAuthError) -> HomeAssistantError:
     return HomeAssistantError(f"Yard Mastery needs you to sign in again: {err}")
 
 
-async def run_write(coordinator: YmCoordinator, kind: str, detail: dict, call: Callable[[], Awaitable[Any]]) -> Any:
+async def run_write(
+    coordinator: YmCoordinator, kind: str, detail: dict, call: Callable[[], Awaitable[Any]]
+) -> Any:
     """Run one write: gate, call, error mapping, logbook, change log, refresh. Returns the API response."""
     ensure_writes_allowed(coordinator.config_entry)
     try:
@@ -72,7 +77,8 @@ async def run_write(coordinator: YmCoordinator, kind: str, detail: dict, call: C
 
 def _record(coordinator: YmCoordinator, kind: str, detail: dict) -> None:
     coordinator.hass.bus.async_fire(
-        "logbook_entry", {"name": "Yard Mastery", "message": _message(kind, detail), "domain": DOMAIN}
+        "logbook_entry",
+        {"name": "Yard Mastery", "message": _message(kind, detail), "domain": DOMAIN},
     )
     coordinator.store.record_write(kind, detail)
 
@@ -98,7 +104,9 @@ async def run_write_steps(
                     base = f"Yard Mastery rejected the change: {err}"
                 changed = "; ".join(d["step"] for d in done) or "nothing"
                 left = "; ".join(d["step"] for d, _ in steps[index:])
-                raise HomeAssistantError(f"{base}. Changed before the failure: {changed}. Not changed: {left}") from err
+                raise HomeAssistantError(
+                    f"{base}. Changed before the failure: {changed}. Not changed: {left}"
+                ) from err
             done.append(detail)
     finally:
         for detail in done:
@@ -129,7 +137,9 @@ def _all_windows(data: YmData) -> dict[int, Window]:
 
 def window_of(data: YmData, item_id: int) -> Window | None:
     """The window holding program item `item_id`."""
-    return next((w for w in _all_windows(data).values() if any(i.id == item_id for i in w.items)), None)
+    return next(
+        (w for w in _all_windows(data).values() if any(i.id == item_id for i in w.items)), None
+    )
 
 
 def resolve_window(data: YmData, window: str | None) -> Window:
@@ -149,7 +159,7 @@ def resolve_window(data: YmData, window: str | None) -> Window:
         matches = [w for w in windows if w.start == start]
     if len(matches) != 1:
         problem = "No" if not matches else "More than one"
-        raise ServiceValidationError(f"{problem} Yard Mastery window matches \"{key}\"")
+        raise ServiceValidationError(f'{problem} Yard Mastery window matches "{key}"')
     return matches[0]
 
 
@@ -170,7 +180,9 @@ def resolve_items(
     for name in products:
         matches = [i for i in found.items if i.product_name.casefold() == name.strip().casefold()]
         if not matches:
-            raise ServiceValidationError(f"No product \"{name}\" in the Yard Mastery window {found.name}")
+            raise ServiceValidationError(
+                f'No product "{name}" in the Yard Mastery window {found.name}'
+            )
         items.extend(matches)
     return items
 
@@ -210,9 +222,9 @@ async def resolve_product(coordinator: YmCoordinator, name_or_id: str | int) -> 
     if len(exact) == 1 or (not exact and len(results) == 1):
         return copy.deepcopy((exact or results)[0])
     if not results:
-        raise ServiceValidationError(f"Yard Mastery has no product \"{text}\"")
+        raise ServiceValidationError(f'Yard Mastery has no product "{text}"')
     names = ", ".join(str(p.get("name")) for p in results[:5])
-    raise ServiceValidationError(f"More than one Yard Mastery product matches \"{text}\": {names}")
+    raise ServiceValidationError(f'More than one Yard Mastery product matches "{text}": {names}')
 
 
 # ---- journal ---------------------------------------------------------------
@@ -270,7 +282,14 @@ def build_journal_entry(
     apps: list[dict] = entry["productApplications"]
     for new in copy.deepcopy(applications or []):
         product_id = (new.get("product") or {}).get("id")
-        current = next((a for a in apps if isinstance(a, dict) and (a.get("product") or {}).get("id") == product_id), None)
+        current = next(
+            (
+                a
+                for a in apps
+                if isinstance(a, dict) and (a.get("product") or {}).get("id") == product_id
+            ),
+            None,
+        )
         if current is None:
             apps.append(new)
             continue
@@ -283,7 +302,9 @@ def build_journal_entry(
         if isinstance(app, dict) and isinstance(app.get("product"), dict):
             app["product"]["measure"] = None
 
-    names = {str(a.get("name") or "").casefold() for a in entry["activities"] if isinstance(a, dict)}
+    names = {
+        str(a.get("name") or "").casefold() for a in entry["activities"] if isinstance(a, dict)
+    }
     for activity in activities or []:
         if str(activity.get("name") or "").casefold() not in names:
             entry["activities"].append(copy.deepcopy(activity))
@@ -315,7 +336,11 @@ def unlink_bundle_item(existing: dict, item_id: int) -> tuple[dict, bool]:
     is removed. Everything else in the entry is kept.
     """
     entry = copy.deepcopy(existing)
-    apps = entry.get("productApplications") if isinstance(entry.get("productApplications"), list) else []
+    apps = (
+        entry.get("productApplications")
+        if isinstance(entry.get("productApplications"), list)
+        else []
+    )
     kept, found = [], False
     for app in apps:
         ids = app.get("bundleItemIds") if isinstance(app, dict) else None
@@ -405,7 +430,11 @@ async def reminder_update(
     raw = reminder.raw
     # The app's Reminder.toReminder: an event title is folded into the detail.
     event = raw.get("event") if isinstance(raw.get("event"), dict) else {}
-    detail = f"<p><b>{event['title']}</b></p>{event.get('detail') or ''}" if event.get("title") else raw.get("detail")
+    detail = (
+        f"<p><b>{event['title']}</b></p>{event.get('detail') or ''}"
+        if event.get("title")
+        else raw.get("detail")
+    )
     body = {
         "id": raw.get("id"),
         "createDate": raw.get("createDate"),

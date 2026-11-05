@@ -1,4 +1,5 @@
 """Tests for the pure write helpers: journal merge, item resolution."""
+
 from datetime import date
 
 import pytest
@@ -37,8 +38,14 @@ def test_build_journal_entry_new_day_shape():
 
 def test_build_journal_entry_lawn_size():
     assert build_journal_entry(None, date(2026, 10, 19), lawn_sq_ft=893)["lawnSqFt"] == 893
-    assert build_journal_entry({"lawnSqFt": 700}, date(2026, 10, 19), lawn_sq_ft=893)["lawnSqFt"] == 700
-    assert build_journal_entry({"lawnSqFt": None}, date(2026, 10, 19), lawn_sq_ft=893)["lawnSqFt"] == 893
+    assert (
+        build_journal_entry({"lawnSqFt": 700}, date(2026, 10, 19), lawn_sq_ft=893)["lawnSqFt"]
+        == 700
+    )
+    assert (
+        build_journal_entry({"lawnSqFt": None}, date(2026, 10, 19), lawn_sq_ft=893)["lawnSqFt"]
+        == 893
+    )
 
 
 def test_build_journal_entry_merges_and_clears_volatile_fields():
@@ -83,9 +90,15 @@ def test_build_journal_entry_merges_and_clears_volatile_fields():
 async def test_resolve_items(load_entry):
     entry = await load_entry()
     data = entry.runtime_data.data
-    assert [i.id for i in resolve_items(data, item_ids=None, products=["dimension"], window="next")] == [30869939]
-    assert [i.id for i in resolve_items(data, item_ids=None, products=None, window="2026-11-19")] == [30869939]
-    assert [i.id for i in resolve_items(data, item_ids=[30869938], products=None, window=None)] == [30869938]
+    assert [
+        i.id for i in resolve_items(data, item_ids=None, products=["dimension"], window="next")
+    ] == [30869939]
+    assert [
+        i.id for i in resolve_items(data, item_ids=None, products=None, window="2026-11-19")
+    ] == [30869939]
+    assert [i.id for i in resolve_items(data, item_ids=[30869938], products=None, window=None)] == [
+        30869938
+    ]
     assert len(resolve_items(data, item_ids=None, products=None, window=None)) == 3
     with pytest.raises(ServiceValidationError, match="Nope"):
         resolve_items(data, item_ids=None, products=["Nope"], window=None)

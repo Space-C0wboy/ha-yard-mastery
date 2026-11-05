@@ -1,4 +1,5 @@
 """Config flow: sign in, reauth, options."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -57,7 +58,7 @@ class YmConfigFlow(ConfigFlow, domain=DOMAIN):
                 data, guid = await self._sign_in(user_input[CONF_EMAIL], user_input[CONF_PASSWORD])
             except YmAuthError:
                 errors["base"] = "invalid_auth"
-            except (YmError, KeyError, TypeError):
+            except YmError, KeyError, TypeError:
                 errors["base"] = "cannot_connect"
             else:
                 await self.async_set_unique_id(guid)
@@ -77,7 +78,9 @@ class YmConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
         return await self.async_step_reauth_confirm()
 
-    async def async_step_reauth_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         entry = self._get_reauth_entry()
         errors: dict[str, str] = {}
         if user_input is not None:
@@ -85,7 +88,7 @@ class YmConfigFlow(ConfigFlow, domain=DOMAIN):
                 data, guid = await self._sign_in(entry.data[CONF_EMAIL], user_input[CONF_PASSWORD])
             except YmAuthError:
                 errors["base"] = "invalid_auth"
-            except (YmError, KeyError, TypeError):
+            except YmError, KeyError, TypeError:
                 errors["base"] = "cannot_connect"
             else:
                 await self.async_set_unique_id(guid)
@@ -108,13 +111,18 @@ class YmOptionsFlow(OptionsFlow):
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_ALLOW_WRITES, default=current.get(CONF_ALLOW_WRITES, False)): bool,
-                    vol.Optional(CONF_APP_VERSION, default=current.get(CONF_APP_VERSION, DEFAULT_APP_VERSION)): vol.All(
-                        str, vol.Length(min=1)
-                    ),
                     vol.Optional(
-                        CONF_SCAN_INTERVAL, default=current.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_MINUTES)
-                    ): vol.All(vol.Coerce(int), vol.Range(min=MIN_SCAN_MINUTES, max=MAX_SCAN_MINUTES)),
+                        CONF_ALLOW_WRITES, default=current.get(CONF_ALLOW_WRITES, False)
+                    ): bool,
+                    vol.Optional(
+                        CONF_APP_VERSION, default=current.get(CONF_APP_VERSION, DEFAULT_APP_VERSION)
+                    ): vol.All(str, vol.Length(min=1)),
+                    vol.Optional(
+                        CONF_SCAN_INTERVAL,
+                        default=current.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_MINUTES),
+                    ): vol.All(
+                        vol.Coerce(int), vol.Range(min=MIN_SCAN_MINUTES, max=MAX_SCAN_MINUTES)
+                    ),
                 }
             ),
         )

@@ -1,4 +1,5 @@
 """Coordinator: fast, slow and reference polling tiers, history import, version check."""
+
 from __future__ import annotations
 
 import logging
@@ -99,13 +100,17 @@ class YmCoordinator(DataUpdateCoordinator[YmData]):
 
     config_entry: YmConfigEntry
 
-    def __init__(self, hass: HomeAssistant, entry: YmConfigEntry, client: YardMasteryClient, store: YmStore) -> None:
+    def __init__(
+        self, hass: HomeAssistant, entry: YmConfigEntry, client: YardMasteryClient, store: YmStore
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,
             config_entry=entry,
             name=DOMAIN,
-            update_interval=timedelta(minutes=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_MINUTES)),
+            update_interval=timedelta(
+                minutes=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_MINUTES)
+            ),
         )
         self.client = client
         self.store = store
@@ -138,7 +143,9 @@ class YmCoordinator(DataUpdateCoordinator[YmData]):
             _LOGGER.debug("Could not refresh %s: %s", _log_key(key), err)
             # Auth on optional data is final for the key, not reauth: only the fast tier and writes reauth,
             # and the client already caps its re-logins.
-            final = isinstance(err, YmAuthError) or (isinstance(err, YmApiError) and 400 <= err.status < 500)
+            final = isinstance(err, YmAuthError) or (
+                isinstance(err, YmApiError) and 400 <= err.status < 500
+            )
             self._failed[key] = (now, call, args, str(err), final)
             return None
         self._failed.pop(key, None)
@@ -188,10 +195,16 @@ class YmCoordinator(DataUpdateCoordinator[YmData]):
                 await self.import_history()
 
         await self._fast_tier(year)
-        for key, (when, call, args, _, final) in sorted(self._failed.items(), key=lambda kv: kv[1][0]):
+        for key, (when, call, args, _, final) in sorted(
+            self._failed.items(), key=lambda kv: kv[1][0]
+        ):
             if not self._wanted(key):
                 del self._failed[key]
-            elif not final and now - when >= RETRY_AFTER and await self._extra_fetch(key, call, *args):
+            elif (
+                not final
+                and now - when >= RETRY_AFTER
+                and await self._extra_fetch(key, call, *args)
+            ):
                 if key == "version_validate":
                     self._apply_version(self.store.latest.get(key))
         if self.force_slow or self._last_slow is None or now - self._last_slow >= SLOW_INTERVAL:
@@ -221,20 +234,26 @@ class YmCoordinator(DataUpdateCoordinator[YmData]):
         for item in dashboard.get("completed") or []:
             barcode = _dict(item).get("barcode")
             if barcode:
-                await self._fetch_optional(f"soil_report:{barcode}", self.client.soil_report, barcode)
+                await self._fetch_optional(
+                    f"soil_report:{barcode}", self.client.soil_report, barcode
+                )
                 await self._fetch_optional(f"stilp:{barcode}", self.client.stilp_products, barcode)
         await self._fetch_optional("lawn_program_status", self.client.lawn_program_status)
         await self._fetch_optional(f"calendar:{year + 1}", self.client.calendar_year, year + 1)
         for window in self._windows().values():
             if not window.has_details and f"bundle:{window.id}" not in self.store.latest:
-                await self._fetch_optional(f"bundle:{window.id}", self.client.bundle_details, window.id)
+                await self._fetch_optional(
+                    f"bundle:{window.id}", self.client.bundle_details, window.id
+                )
 
     async def _reference_tier(self) -> None:
         await self._fetch_optional("filter_options", self.client.filter_options)
         await self._fetch_optional("journal_activities", self.client.journal_activities)
         await self._fetch_optional("lawn_types", self.client.lawn_types)
         await self._fetch_optional("program_values", self.client.program_values)
-        self._apply_version(await self._fetch_optional("version_validate", self.client.version_validate))
+        self._apply_version(
+            await self._fetch_optional("version_validate", self.client.version_validate)
+        )
 
     def _apply_version(self, result: Any) -> None:
         if isinstance(result, dict) and isinstance(result.get("isValid"), bool):
@@ -244,7 +263,9 @@ class YmCoordinator(DataUpdateCoordinator[YmData]):
         if result["isValid"]:
             ir.async_delete_issue(self.hass, DOMAIN, ISSUE_APP_VERSION)
             return
-        version = result.get("version") or self.config_entry.options.get(CONF_APP_VERSION, DEFAULT_APP_VERSION)
+        version = result.get("version") or self.config_entry.options.get(
+            CONF_APP_VERSION, DEFAULT_APP_VERSION
+        )
         ir.async_create_issue(
             self.hass,
             DOMAIN,
@@ -380,7 +401,9 @@ class YmCoordinator(DataUpdateCoordinator[YmData]):
                 except _PARSE_ERRORS:
                     _LOGGER.debug("Skipping unparseable soil test")
 
-        return YmSnapshot(windows=windows, journal=journal, reminders=reminders, soil_tests=soil_tests)
+        return YmSnapshot(
+            windows=windows, journal=journal, reminders=reminders, soil_tests=soil_tests
+        )
 
     def _build(self, now: datetime) -> YmData:
         latest = self.store.latest

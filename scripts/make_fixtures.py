@@ -6,6 +6,7 @@ Reads <research_dir>/probe/out/*.json (each {status, body}), replaces personal
 values with fixed fakes, and refuses to write if any real value survives.
 Free-text fields (body/notes/description) are not scrubbed: eyeball them when regenerating.
 """
+
 import json
 import pathlib
 import sys
@@ -90,7 +91,11 @@ class Scrubber:
                     elif value is not None:
                         self.note(value)
                         fake = FAKE[key]
-                        out[key] = str(fake) if isinstance(value, str) and not isinstance(fake, str) else fake
+                        out[key] = (
+                            str(fake)
+                            if isinstance(value, str) and not isinstance(fake, str)
+                            else fake
+                        )
                     else:
                         out[key] = None
                 else:
@@ -105,7 +110,10 @@ def main(research: pathlib.Path, out_dir: pathlib.Path) -> int:
     src = research / "probe" / "out"
     scrubber = Scrubber()
     outputs: dict[str, object] = {
-        "login": {"accessToken": "tok-fixture", "user": {"email": FAKE["email"], "guid": FAKE["guid"]}}
+        "login": {
+            "accessToken": "tok-fixture",
+            "user": {"email": FAKE["email"], "guid": FAKE["guid"]},
+        }
     }
     # The login user block holds the account's real identity: collect it for the check.
     login = json.loads((src / "login_user.json").read_text(encoding="utf-8"))["body"]
@@ -122,7 +130,10 @@ def main(research: pathlib.Path, out_dir: pathlib.Path) -> int:
             if real.lower() in text.lower():
                 leaks.append((name, "<redacted real value>"))
     if leaks:
-        print(f"PII check FAILED: {len(leaks)} leak(s) in {sorted({n for n, _ in leaks})}", file=sys.stderr)
+        print(
+            f"PII check FAILED: {len(leaks)} leak(s) in {sorted({n for n, _ in leaks})}",
+            file=sys.stderr,
+        )
         return 1
 
     out_dir.mkdir(parents=True, exist_ok=True)

@@ -1,4 +1,5 @@
 """Tests for the redacted diagnostics."""
+
 import json
 
 from custom_components.yard_mastery.diagnostics import async_get_config_entry_diagnostics
@@ -6,7 +7,7 @@ from custom_components.yard_mastery.diagnostics import async_get_config_entry_di
 SECRETS = [
     "lawn@example.com",
     '"pw"',
-    ": \"tok\"",
+    ': "tok"',
     "1 Test St",
     "00000",
     "user-guid-1",
@@ -26,7 +27,9 @@ async def test_diagnostics_redacts_personal_data(hass, load_entry):
     coordinator.store.history.append(
         {"kind": "soil_test_added", "key": "soil_test:YM00001", "old": None, "new": "SUBMITTED"}
     )
-    coordinator.store.history.append({"kind": "x", "key": "soil_report:YM00001", "old": None, "new": None})
+    coordinator.store.history.append(
+        {"kind": "x", "key": "soil_report:YM00001", "old": None, "new": None}
+    )
     coordinator.data.last_error = "GET /v1/soil-test/report?barcode=YM00001 failed (user-guid-1)"
 
     diag = await async_get_config_entry_diagnostics(hass, entry)

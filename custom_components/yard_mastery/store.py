@@ -1,4 +1,5 @@
 """Raw latest-payload store and append-only change log."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -87,13 +88,25 @@ class YmStore:
 
         def add(kind: str, key: str, old_val: Any, new_val: Any) -> None:
             changes.append(
-                {"at": at, "source": source, "kind": kind, "key": key, "old": old_val, "new": new_val}
+                {
+                    "at": at,
+                    "source": source,
+                    "kind": kind,
+                    "key": key,
+                    "old": old_val,
+                    "new": new_val,
+                }
             )
 
         for wid, win in new.windows.items():
             prev = old.windows.get(wid)
             if prev is None:
-                add("window_added", f"window:{wid}", None, [win.start.isoformat(), win.end.isoformat()])
+                add(
+                    "window_added",
+                    f"window:{wid}",
+                    None,
+                    [win.start.isoformat(), win.end.isoformat()],
+                )
                 continue
             if (prev.start, prev.end) != (win.start, win.end):
                 add(

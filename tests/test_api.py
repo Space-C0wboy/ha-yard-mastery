@@ -1,4 +1,5 @@
 """Tests for the Yard Mastery API client."""
+
 import asyncio
 from datetime import UTC, datetime, timedelta
 
@@ -6,7 +7,12 @@ import aiohttp
 import pytest
 from aioresponses import CallbackResult
 
-from custom_components.yard_mastery.api import YardMasteryClient, YmApiError, YmAuthError, YmConnectionError
+from custom_components.yard_mastery.api import (
+    YardMasteryClient,
+    YmApiError,
+    YmAuthError,
+    YmConnectionError,
+)
 from custom_components.yard_mastery.const import MAX_RELOGINS, RELOGIN_COOLDOWN, TOKEN_MAX_AGE
 
 from .common import fixture, url
@@ -190,7 +196,10 @@ async def test_errors_do_not_carry_the_barcode(mock_ym, session):
     client = make_client(session)
     mock_ym.get(url("/v1/soil-test/stilp/products/YM00001"), status=404)
     mock_ym.get(url("/v1/soil-test/stilp/products/YM00001"), status=503)
-    mock_ym.get(url("/v1/soil-test/report"), exception=aiohttp.ClientConnectionError("GET /x?barcode=YM00001 failed"))
+    mock_ym.get(
+        url("/v1/soil-test/report"),
+        exception=aiohttp.ClientConnectionError("GET /x?barcode=YM00001 failed"),
+    )
     for call in (client.stilp_products, client.stilp_products, client.soil_report):
         with pytest.raises((YmApiError, YmConnectionError)) as err:
             await call("YM00001")

@@ -1,4 +1,5 @@
 """Shared test fixtures."""
+
 import re
 from collections.abc import Generator
 from types import SimpleNamespace
@@ -36,7 +37,10 @@ class _Response(ClientResponse):
 @pytest.fixture
 def mock_ym() -> Generator[aioresponses]:
     # Localhost passes through so HA's test HTTP and websocket clients keep working.
-    with patch("aioresponses.core.ClientResponse", _Response), aioresponses(passthrough=["http://127.0.0.1"]) as mock:
+    with (
+        patch("aioresponses.core.ClientResponse", _Response),
+        aioresponses(passthrough=["http://127.0.0.1"]) as mock,
+    ):
         yield mock
 
 
@@ -48,7 +52,9 @@ def _bundle_details(url_, **kwargs):
     return CallbackResult(payload={**fixture("bundle_current"), "id": bundle_id})
 
 
-def mock_reads(mock: aioresponses, *, overrides: dict | None = None, calendars: dict | None = None) -> None:
+def mock_reads(
+    mock: aioresponses, *, overrides: dict | None = None, calendars: dict | None = None
+) -> None:
     """Mock every read endpoint from the fixtures (repeatable).
 
     overrides: {path: payload} replacing a fixture. calendars: {year: payload}; other years are empty.
@@ -75,12 +81,24 @@ def mock_reads(mock: aioresponses, *, overrides: dict | None = None, calendars: 
     for path, payload in gets.items():
         mock.get(url(path), payload=payload, repeat=True)
     home = fixture("home_bundle")
-    mock.get(url(f"/v1/dlux/bundle/{home['bundleId']}/details"), payload=fixture("bundle_current"), repeat=True)
-    mock.get(url(f"/v1/dlux/bundle/{home['nextBundleId']}/details"), payload=fixture("bundle_next"), repeat=True)
+    mock.get(
+        url(f"/v1/dlux/bundle/{home['bundleId']}/details"),
+        payload=fixture("bundle_current"),
+        repeat=True,
+    )
+    mock.get(
+        url(f"/v1/dlux/bundle/{home['nextBundleId']}/details"),
+        payload=fixture("bundle_next"),
+        repeat=True,
+    )
     mock.get(re.compile(r".*/v1/dlux/bundle/\d+/details.*"), callback=_bundle_details, repeat=True)
     # Calendar: the current year has data, every other year is empty.
     for year, payload in {2026: fixture("calendar_2026"), **(calendars or {})}.items():
-        mock.get(re.compile(rf".*/v1/calendar/search\?.*startDate={year}-01-01.*"), payload=payload, repeat=True)
+        mock.get(
+            re.compile(rf".*/v1/calendar/search\?.*startDate={year}-01-01.*"),
+            payload=payload,
+            repeat=True,
+        )
     mock.get(url("/v1/calendar/search"), payload=fixture("calendar_empty"), repeat=True)
 
 
@@ -88,7 +106,9 @@ def mock_reads(mock: aioresponses, *, overrides: dict | None = None, calendars: 
 def load_entry(hass, mock_ym, hass_storage):
     """Factory: create an entry and set it up against mocked reads."""
 
-    async def _load(*, overrides=None, calendars=None, seed=None, setup=True, **options) -> MockConfigEntry:
+    async def _load(
+        *, overrides=None, calendars=None, seed=None, setup=True, **options
+    ) -> MockConfigEntry:
         entry = make_entry(hass, **options)
         mock_reads(mock_ym, overrides=overrides, calendars=calendars)
         mock_ym.post(url("/login"), payload=fixture("login"), repeat=True)
@@ -98,7 +118,10 @@ def load_entry(hass, mock_ym, hass_storage):
                 "minor_version": 1,
                 "key": f"yard_mastery.{entry.entry_id}",
                 # A seeded store counts as already imported unless the test says otherwise.
-                "data": {"latest": {"history_walked": True, "history_imported": True, **seed}, "history": []},
+                "data": {
+                    "latest": {"history_walked": True, "history_imported": True, **seed},
+                    "history": [],
+                },
             }
         if setup:
             await hass.config_entries.async_setup(entry.entry_id)

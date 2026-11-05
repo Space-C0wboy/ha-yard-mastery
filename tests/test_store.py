@@ -1,4 +1,5 @@
 """Tests for the raw store and change log."""
+
 import copy
 from dataclasses import replace
 from datetime import date

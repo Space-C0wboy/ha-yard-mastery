@@ -1,4 +1,5 @@
 """Tests for the user, reauth and options flows."""
+
 from unittest.mock import patch
 
 import pytest
@@ -74,7 +75,9 @@ async def test_reauth_updates_password(hass, mock_ym, no_setup):
     _mock_account(mock_ym)
     result = await entry.start_reauth_flow(hass)
     assert result["step_id"] == "reauth_confirm"
-    result = await hass.config_entries.flow.async_configure(result["flow_id"], {"password": "new-pw"})
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"password": "new-pw"}
+    )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reauth_successful"
     assert entry.data["password"] == "new-pw"
@@ -84,7 +87,9 @@ async def test_reauth_updates_password(hass, mock_ym, no_setup):
 async def test_reauth_wrong_account_aborts(hass, mock_ym, no_setup):
     entry = make_entry(hass)
     mock_ym.post(url("/login"), payload=fixture("login"))
-    mock_ym.get(url("/v1/user/status"), payload={**fixture("user_status"), "user": {"guid": "someone-else"}})
+    mock_ym.get(
+        url("/v1/user/status"), payload={**fixture("user_status"), "user": {"guid": "someone-else"}}
+    )
     result = await entry.start_reauth_flow(hass)
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {"password": "pw"})
     assert result["type"] is FlowResultType.ABORT
@@ -112,7 +117,9 @@ async def test_options_defaults_and_min_interval(hass, no_setup):
     assert result["data"] == {"allow_writes": False, "app_version": "4.00.05", "scan_interval": 30}
 
     form = await hass.config_entries.options.async_init(entry.entry_id)
-    result = await hass.config_entries.options.async_configure(form["flow_id"], {"scan_interval": 15})
+    result = await hass.config_entries.options.async_configure(
+        form["flow_id"], {"scan_interval": 15}
+    )
     assert result["data"]["scan_interval"] == 15
 
 

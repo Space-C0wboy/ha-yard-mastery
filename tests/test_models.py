@@ -1,4 +1,5 @@
 """Tests for models and parsers."""
+
 import copy
 from dataclasses import replace
 from datetime import date
@@ -169,7 +170,12 @@ def test_merge_window_keeps_calendar_status_over_details():
     windows, _, _ = parse_calendar(fixture("calendar_2026"))
     base = windows[12848538]
     details = parse_window(fixture("bundle_current"))
-    stale = replace(details, items=tuple(replace(i, status="CREATED", completed=False, journal_date=None) for i in details.items))
+    stale = replace(
+        details,
+        items=tuple(
+            replace(i, status="CREATED", completed=False, journal_date=None) for i in details.items
+        ),
+    )
     merged = merge_window(base, stale)
     by_id = {i.id: i for i in merged.items}
     for item in base.items:
@@ -184,7 +190,11 @@ def test_merge_window_keeps_calendar_status_over_details():
 def test_journal_activities_as_objects_or_names():
     # The app (and our writes) post {id, name} objects; older payloads may carry plain names.
     entry = parse_journal_entry(
-        {"id": 1, "entryDate": "2026-07-04", "activities": [{"id": 1, "name": "Mow"}, "Edge", {"id": 9}]}
+        {
+            "id": 1,
+            "entryDate": "2026-07-04",
+            "activities": [{"id": 1, "name": "Mow"}, "Edge", {"id": 9}],
+        }
     )
     assert entry.activities == ("Mow", "Edge")
 
@@ -215,9 +225,30 @@ def test_soil_history_one_test():
     assert h["date"] == "2026-10-06"
     assert h["density"] == 54.0
     assert h["nutrients"]["ph"]["value"] == 6.39
-    assert h["nutrients"]["k"] == {"value": 33.88, "low": h["nutrients"]["k"]["low"], "high": h["nutrients"]["k"]["high"], "status": "low"}
+    assert h["nutrients"]["k"] == {
+        "value": 33.88,
+        "low": h["nutrients"]["k"]["low"],
+        "high": h["nutrients"]["k"]["high"],
+        "status": "low",
+    }
     assert h["nutrients"]["k"]["low"] is not None
-    assert set(h["nutrients"]) >= {"ph", "n", "p", "k", "ca", "mg", "s", "fe", "mn", "zn", "b", "cu", "na", "nh4-n", "no3-n"}
+    assert set(h["nutrients"]) >= {
+        "ph",
+        "n",
+        "p",
+        "k",
+        "ca",
+        "mg",
+        "s",
+        "fe",
+        "mn",
+        "zn",
+        "b",
+        "cu",
+        "na",
+        "nh4-n",
+        "no3-n",
+    }
 
 
 def test_soil_history_orders_and_skips_incomplete():
@@ -236,4 +267,5 @@ def test_soil_history_orders_and_skips_incomplete():
 
 def test_soil_history_has_no_barcode():
     import json
+
     assert "YM0000" not in json.dumps(soil_history([_soil()]))

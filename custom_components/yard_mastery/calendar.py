@@ -1,4 +1,5 @@
 """Yard Mastery calendar: program windows, journal entries and reminders as all-day events."""
+
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
@@ -93,12 +94,19 @@ class YmCalendar(YmEntity, CalendarEntity):
     def supported_features(self) -> CalendarEntityFeature:
         if not self.coordinator.config_entry.options.get(CONF_ALLOW_WRITES, False):
             return CalendarEntityFeature(0)
-        return CalendarEntityFeature.CREATE_EVENT | CalendarEntityFeature.UPDATE_EVENT | CalendarEntityFeature.DELETE_EVENT
+        return (
+            CalendarEntityFeature.CREATE_EVENT
+            | CalendarEntityFeature.UPDATE_EVENT
+            | CalendarEntityFeature.DELETE_EVENT
+        )
 
     def _window_events(self) -> list[CalendarEvent]:
         data = self.coordinator.data
         lawn = lawn_square_feet(data.yard)
-        return [_window_event(w, lawn) for w in sorted(data.snapshot.windows.values(), key=lambda w: w.start)]
+        return [
+            _window_event(w, lawn)
+            for w in sorted(data.snapshot.windows.values(), key=lambda w: w.start)
+        ]
 
     def _all_events(self) -> list[CalendarEvent]:
         data = self.coordinator.data
@@ -131,7 +139,11 @@ class YmCalendar(YmEntity, CalendarEntity):
         # All-day events span local midnights; compare those with the (possibly mid-day) range ends.
         midnight = dt_util.start_of_local_day
         return sorted(
-            (e for e in self._all_events() if midnight(e.start) < end_date and midnight(e.end) > start_date),
+            (
+                e
+                for e in self._all_events()
+                if midnight(e.start) < end_date and midnight(e.end) > start_date
+            ),
             key=lambda e: (e.start, e.uid),
         )
 
@@ -154,11 +166,18 @@ class YmCalendar(YmEntity, CalendarEntity):
         await reminder_create(self.coordinator, day, kwargs["summary"])
 
     async def async_update_event(
-        self, uid: str, event: dict[str, Any], recurrence_id: str | None = None, recurrence_range: str | None = None
+        self,
+        uid: str,
+        event: dict[str, Any],
+        recurrence_id: str | None = None,
+        recurrence_range: str | None = None,
     ) -> None:
         reminder_id = self._reminder_id(uid)
         await reminder_update(
-            self.coordinator, reminder_id, day=self._day(event.get("dtstart")), title=event.get("summary")
+            self.coordinator,
+            reminder_id,
+            day=self._day(event.get("dtstart")),
+            title=event.get("summary"),
         )
 
     async def async_delete_event(

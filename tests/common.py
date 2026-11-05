@@ -1,4 +1,5 @@
 """Shared test helpers."""
+
 import json
 import pathlib
 import re

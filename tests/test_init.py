@@ -1,4 +1,5 @@
 """Tests for setup, unload and option-driven reload."""
+
 from homeassistant.config_entries import ConfigEntryState
 
 from custom_components.yard_mastery.const import DOMAIN

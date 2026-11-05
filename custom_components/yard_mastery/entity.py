@@ -1,4 +1,5 @@
 """Base entity: one Yard Mastery device per account."""
+
 from __future__ import annotations
 
 from homeassistant.helpers.device_registry import DeviceInfo

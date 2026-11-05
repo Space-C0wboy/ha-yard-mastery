@@ -1,4 +1,5 @@
 """Typed models and pure parsers for Yard Mastery API payloads."""
+
 from __future__ import annotations
 
 import logging
@@ -168,7 +169,7 @@ def parse_window(raw: dict) -> Window:
     for item in _list(raw.get("bundleItems")):
         try:
             items.append(_parse_item(item))
-        except (KeyError, TypeError, AttributeError):
+        except KeyError, TypeError, AttributeError:
             _LOGGER.debug("Skipping malformed bundle item")
     items.sort(key=lambda i: i.display_order)
     return Window(
@@ -182,8 +183,7 @@ def parse_window(raw: dict) -> Window:
         image_url=raw.get("imageUrl"),
         blackout_treatment=raw.get("blackoutTreatment"),
         has_details=any(
-            isinstance(b, dict)
-            and (b.get("product") or {}).get("applicationRate") is not None
+            isinstance(b, dict) and (b.get("product") or {}).get("applicationRate") is not None
             for b in _list(raw.get("bundleItems"))
         ),
         raw=raw,
@@ -198,7 +198,9 @@ def merge_window(base: Window, details: Window) -> Window:
     """
     by_id = {i.id: i for i in details.items}
     items = tuple(
-        replace(d, status=i.status, completed=i.completed, journal_date=i.journal_date) if (d := by_id.pop(i.id, None)) else i
+        replace(d, status=i.status, completed=i.completed, journal_date=i.journal_date)
+        if (d := by_id.pop(i.id, None))
+        else i
         for i in base.items
     ) + tuple(by_id.values())
     return replace(
@@ -239,7 +241,7 @@ def parse_journal_entry(raw: dict) -> JournalEntry:
     for app in _list(raw.get("productApplications")):
         try:
             apps.append(_parse_application(app))
-        except (KeyError, TypeError, AttributeError):
+        except KeyError, TypeError, AttributeError:
             _LOGGER.debug("Skipping malformed product application")
     segments = []
     for seg in _list(raw.get("lawnSegments")):
@@ -293,19 +295,19 @@ def parse_calendar(
                 try:
                     win = parse_window(day["bundle"])
                     windows[win.id] = win
-                except (KeyError, TypeError, ValueError):
+                except KeyError, TypeError, ValueError:
                     _LOGGER.debug("Skipping unparseable bundle on %s", day_date)
             if isinstance(day.get("journalEntry"), dict):
                 try:
                     entry = parse_journal_entry(day["journalEntry"])
                     journal[entry.day] = entry
-                except (KeyError, TypeError, ValueError):
+                except KeyError, TypeError, ValueError:
                     _LOGGER.debug("Skipping unparseable journal entry on %s", day_date)
             for rem in _list(day.get("reminders")):
                 try:
                     parsed = _parse_reminder(rem, day_date)
                     reminders[parsed.id] = parsed
-                except (KeyError, TypeError, ValueError, AttributeError):
+                except KeyError, TypeError, ValueError, AttributeError:
                     _LOGGER.debug("Skipping unparseable reminder on %s", day_date)
     return windows, journal, reminders
 
@@ -323,7 +325,7 @@ def parse_segments(raw: list | None) -> list[Segment]:
                     segment_type=seg.get("segmentType"),
                 )
             )
-        except (KeyError, TypeError, AttributeError):
+        except KeyError, TypeError, AttributeError:
             _LOGGER.debug("Skipping malformed lawn segment")
     return segments
 
@@ -413,11 +415,22 @@ def soil_history(tests: Iterable[SoilTest]) -> list[dict]:
             continue
         day = test.lab_date or test.created
         nutrients = {
-            key.partition("_")[2]: {"value": n.value, "low": n.low, "high": n.high, "status": n.status}
+            key.partition("_")[2]: {
+                "value": n.value,
+                "low": n.low,
+                "high": n.high,
+                "status": n.status,
+            }
             for key, n in test.nutrients.items()
             if key.startswith("ppm_") and n.unit == "ppm" and isinstance(n.value, (int, float))
         }
-        out.append({"date": day.isoformat() if day else None, "density": test.density, "nutrients": nutrients})
+        out.append(
+            {
+                "date": day.isoformat() if day else None,
+                "density": test.density,
+                "nutrients": nutrients,
+            }
+        )
     return sorted(out, key=lambda h: h["date"] or "")
 
 
@@ -430,7 +443,9 @@ def lawn_square_feet(yard: dict) -> float | None:
     return None
 
 
-def total_amount(rate: float | None, coverage_sq_ft: float | None, lawn_sq_ft: float | None) -> float | None:
+def total_amount(
+    rate: float | None, coverage_sq_ft: float | None, lawn_sq_ft: float | None
+) -> float | None:
     """Total product over the lawn (what the app stores as appliedRate): rate x area / coverage, to 0.01."""
     if rate is None or not coverage_sq_ft or not lawn_sq_ft:
         return None

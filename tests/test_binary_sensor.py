@@ -1,4 +1,5 @@
 """Tests for the Yard Mastery binary sensors."""
+
 from .common import fixture
 
 

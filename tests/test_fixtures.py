@@ -1,4 +1,5 @@
 """Guard against personal data leaking into the fixtures (structural checks against the fakes)."""
+
 import json
 
 import pytest

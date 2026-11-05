@@ -1,4 +1,5 @@
 """Tests for the Yard Mastery sensors."""
+
 import json
 
 from homeassistant.helpers import entity_registry as er
@@ -16,7 +17,10 @@ async def _load(hass, load_entry, **kwargs):
 
 
 def _by_uid(hass, entry):
-    return {e.unique_id: e for e in er.async_entries_for_config_entry(er.async_get(hass), entry.entry_id)}
+    return {
+        e.unique_id: e
+        for e in er.async_entries_for_config_entry(er.async_get(hass), entry.entry_id)
+    }
 
 
 async def test_soil_temperature(hass, load_entry):
@@ -37,7 +41,18 @@ async def test_current_window(hass, load_entry):
     items = {i["product"]: i for i in state.attributes["items"]}
     assert items["Flagship"]["whole_lawn"] == 2.68  # 3.0 per 1000 on the measured 893 sq ft
     assert set(items["Flagship"]) == {
-        "id", "product", "type", "material", "rate", "unit", "whole_lawn", "n", "p", "k", "status", "journal_date",
+        "id",
+        "product",
+        "type",
+        "material",
+        "rate",
+        "unit",
+        "whole_lawn",
+        "n",
+        "p",
+        "k",
+        "status",
+        "journal_date",
     }
     assert items["Flagship"]["status"] == "COMPLETED"
     assert items["Flagship"]["journal_date"] == "2026-10-19"
@@ -79,7 +94,9 @@ async def test_nitrogen_this_year(hass, load_entry):
     assert state.attributes["potassium"] == expected["k"]
     assert "Spoon Juice" in state.attributes["not_counted"]
     assert "Flagship" in state.attributes["by_product"]
-    assert hass.states.get("sensor.yard_mastery_applications_this_year").state == str(expected["applications"])
+    assert hass.states.get("sensor.yard_mastery_applications_this_year").state == str(
+        expected["applications"]
+    )
 
 
 async def test_soil_test_and_nutrients(hass, load_entry):
@@ -148,7 +165,11 @@ async def test_no_personal_attributes(hass, load_entry):
 
 async def test_soil_temperature_unit_follows_api(hass, load_entry):
     hass.config.units = US_CUSTOMARY_SYSTEM
-    await load_entry(overrides={"/v4/home/soil-temp": {**fixture("soil_temp"), "soilTempUnit": "C", "soilTemp": 17}})
+    await load_entry(
+        overrides={
+            "/v4/home/soil-temp": {**fixture("soil_temp"), "soilTempUnit": "C", "soilTemp": 17}
+        }
+    )
     state = hass.states.get("sensor.yard_mastery_soil_temperature")
     assert state.attributes["unit_of_measurement"] == "°F"
     assert round(float(state.state)) == 63
