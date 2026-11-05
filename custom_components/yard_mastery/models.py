@@ -169,7 +169,7 @@ def parse_window(raw: dict) -> Window:
     for item in _list(raw.get("bundleItems")):
         try:
             items.append(_parse_item(item))
-        except KeyError, TypeError, AttributeError:
+        except (KeyError, TypeError, AttributeError):
             _LOGGER.debug("Skipping malformed bundle item")
     items.sort(key=lambda i: i.display_order)
     return Window(
@@ -241,7 +241,7 @@ def parse_journal_entry(raw: dict) -> JournalEntry:
     for app in _list(raw.get("productApplications")):
         try:
             apps.append(_parse_application(app))
-        except KeyError, TypeError, AttributeError:
+        except (KeyError, TypeError, AttributeError):
             _LOGGER.debug("Skipping malformed product application")
     segments = []
     for seg in _list(raw.get("lawnSegments")):
@@ -295,19 +295,19 @@ def parse_calendar(
                 try:
                     win = parse_window(day["bundle"])
                     windows[win.id] = win
-                except KeyError, TypeError, ValueError:
+                except (KeyError, TypeError, ValueError):
                     _LOGGER.debug("Skipping unparseable bundle on %s", day_date)
             if isinstance(day.get("journalEntry"), dict):
                 try:
                     entry = parse_journal_entry(day["journalEntry"])
                     journal[entry.day] = entry
-                except KeyError, TypeError, ValueError:
+                except (KeyError, TypeError, ValueError):
                     _LOGGER.debug("Skipping unparseable journal entry on %s", day_date)
             for rem in _list(day.get("reminders")):
                 try:
                     parsed = _parse_reminder(rem, day_date)
                     reminders[parsed.id] = parsed
-                except KeyError, TypeError, ValueError, AttributeError:
+                except (KeyError, TypeError, ValueError, AttributeError):
                     _LOGGER.debug("Skipping unparseable reminder on %s", day_date)
     return windows, journal, reminders
 
@@ -325,7 +325,7 @@ def parse_segments(raw: list | None) -> list[Segment]:
                     segment_type=seg.get("segmentType"),
                 )
             )
-        except KeyError, TypeError, AttributeError:
+        except (KeyError, TypeError, AttributeError):
             _LOGGER.debug("Skipping malformed lawn segment")
     return segments
 

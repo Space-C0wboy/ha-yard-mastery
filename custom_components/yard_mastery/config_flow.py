@@ -58,7 +58,7 @@ class YmConfigFlow(ConfigFlow, domain=DOMAIN):
                 data, guid = await self._sign_in(user_input[CONF_EMAIL], user_input[CONF_PASSWORD])
             except YmAuthError:
                 errors["base"] = "invalid_auth"
-            except YmError, KeyError, TypeError:
+            except (YmError, KeyError, TypeError):
                 errors["base"] = "cannot_connect"
             else:
                 await self.async_set_unique_id(guid)
@@ -88,7 +88,7 @@ class YmConfigFlow(ConfigFlow, domain=DOMAIN):
                 data, guid = await self._sign_in(entry.data[CONF_EMAIL], user_input[CONF_PASSWORD])
             except YmAuthError:
                 errors["base"] = "invalid_auth"
-            except YmError, KeyError, TypeError:
+            except (YmError, KeyError, TypeError):
                 errors["base"] = "cannot_connect"
             else:
                 await self.async_set_unique_id(guid)

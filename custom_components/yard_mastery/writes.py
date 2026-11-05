@@ -48,7 +48,7 @@ def _message(kind: str, detail: dict) -> str:
     template = _MESSAGES.get(kind)
     try:
         text = template(values) if callable(template) else template.format(**values)
-    except KeyError, IndexError, AttributeError:
+    except (KeyError, IndexError, AttributeError):
         text = kind.replace("_", " ")
     return f"Home Assistant {text}"
 
