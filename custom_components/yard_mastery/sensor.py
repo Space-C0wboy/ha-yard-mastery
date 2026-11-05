@@ -1,4 +1,5 @@
 """Yard Mastery sensors."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -19,7 +20,14 @@ from homeassistant.util import dt as dt_util
 
 from .coordinator import YmConfigEntry, YmCoordinator, YmData
 from .entity import YmEntity
-from .models import SoilTest, Window, lawn_square_feet, season_totals, soil_history, whole_lawn_amount
+from .models import (
+    SoilTest,
+    Window,
+    lawn_square_feet,
+    season_totals,
+    soil_history,
+    whole_lawn_amount,
+)
 
 PARALLEL_UPDATES = 0
 
@@ -41,7 +49,11 @@ def _iso(value: date | None) -> str | None:
 
 
 def _window_items(window: Window, square_feet: Any) -> list[dict]:
-    sq_ft = square_feet if isinstance(square_feet, (int, float)) and not isinstance(square_feet, bool) else None
+    sq_ft = (
+        square_feet
+        if isinstance(square_feet, (int, float)) and not isinstance(square_feet, bool)
+        else None
+    )
     return [
         {
             "id": item.id,
@@ -98,9 +110,13 @@ def _season(data: YmData) -> dict:
     items = {}
     for window in data.snapshot.windows.values():
         for item in window.items:
-            if item.product_id not in items or (item.measure and not items[item.product_id].measure):
+            if item.product_id not in items or (
+                item.measure and not items[item.product_id].measure
+            ):
                 items[item.product_id] = item
-    return season_totals(data.snapshot.journal.values(), items, _today().year, lawn_square_feet(data.yard))
+    return season_totals(
+        data.snapshot.journal.values(), items, _today().year, lawn_square_feet(data.yard)
+    )
 
 
 def _steps(data: YmData) -> tuple[int | None, int, int]:
@@ -142,7 +158,9 @@ def _soil_temp(data: YmData) -> float | None:
 
 
 def _program_state(data: YmData) -> str | None:
-    return _d(data.yard.get("program")).get("programType") or _d(data.user_status.get("program")).get("program")
+    return _d(data.yard.get("program")).get("programType") or _d(
+        data.user_status.get("program")
+    ).get("program")
 
 
 def _program_attrs(data: YmData, latest: dict) -> dict:
@@ -258,7 +276,9 @@ SENSORS: tuple[YmSensorDescription, ...] = (
             "ambient_icon": d.soil_temp.get("ambientTempIcon"),
         },
     ),
-    YmSensorDescription(key="program", translation_key="program", value_fn=_program_state, attrs_fn=_program_attrs),
+    YmSensorDescription(
+        key="program", translation_key="program", value_fn=_program_state, attrs_fn=_program_attrs
+    ),
     YmSensorDescription(
         key="current_window",
         translation_key="current_window",
@@ -380,7 +400,9 @@ class YmNutrientSensor(YmEntity, SensorEntity):
         super().__init__(coordinator, f"soil_{nutrient_key}")
         self._nutrient = nutrient_key
         group, _, rest = nutrient_key.partition("_")
-        label = _NUTRIENT_LABELS.get(rest) or (rest.replace("_", " ").upper() if len(rest) <= 3 else rest.replace("_", " ").title())
+        label = _NUTRIENT_LABELS.get(rest) or (
+            rest.replace("_", " ").upper() if len(rest) <= 3 else rest.replace("_", " ").title()
+        )
         self._attr_name = f"Soil {label}" + ("" if group == "ppm" else f" ({group})")
         self._attr_entity_registry_enabled_default = rest in _MAIN_NUTRIENTS
         nutrient = self._current()
@@ -405,7 +427,11 @@ class YmNutrientSensor(YmEntity, SensorEntity):
             return None
         group = self._nutrient.partition("_")[0]
         depth = selected_soil_test(self.coordinator.data).nutrients.get(f"{group}_depth")
-        return {"optimal": nutrient.optimal, "status": nutrient.status, "depth": depth.value if depth else None}
+        return {
+            "optimal": nutrient.optimal,
+            "status": nutrient.status,
+            "depth": depth.value if depth else None,
+        }
 
 
 class YmSegmentSensor(YmEntity, SensorEntity):

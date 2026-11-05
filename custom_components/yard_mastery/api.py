@@ -1,4 +1,5 @@
 """Yard Mastery REST client: auth, headers and the relogin policy."""
+
 from __future__ import annotations
 
 import asyncio
@@ -119,7 +120,7 @@ class YardMasteryClient:
                     text = await resp.text()
                 except UnicodeDecodeError as err:
                     raise YmApiError(status, mask(f"undecodable body on {method} {path}")) from err
-        except (aiohttp.ClientError, TimeoutError, asyncio.TimeoutError) as err:
+        except (aiohttp.ClientError, TimeoutError) as err:
             raise YmConnectionError(mask(f"{method} {path}: {err}")) from err
         if status >= 500:
             raise YmConnectionError(mask(f"{method} {path}: HTTP {status}"))
@@ -152,10 +153,20 @@ class YardMasteryClient:
         return body
 
     def _token_expired(self) -> bool:
-        return not self.token or self.token_created is None or self._now() - self.token_created >= TOKEN_MAX_AGE
+        return (
+            not self.token
+            or self.token_created is None
+            or self._now() - self.token_created >= TOKEN_MAX_AGE
+        )
 
     async def _request(
-        self, method: str, path: str, *, params: dict | None = None, json_body: Any = None, data: Any = None
+        self,
+        method: str,
+        path: str,
+        *,
+        params: dict | None = None,
+        json_body: Any = None,
+        data: Any = None,
     ) -> Any:
         logged_in_here = False
         if self._token_expired():
@@ -169,12 +180,23 @@ class YardMasteryClient:
                     # Another request may have re-logged in while this one waited: just retry with its token.
                     if self.token == used_token:
                         if self._failed_relogins >= MAX_RELOGINS:
-                            raise YmAuthError("Yard Mastery keeps rejecting the login; reauthentication needed")
-                        if self._last_login is not None and self._now() - self._last_login < RELOGIN_COOLDOWN:
-                            raise YmAuthError("Yard Mastery rejected the token shortly after a login")
-                        _LOGGER.debug("Token rejected on %s; logging in again", mask(f"{method} {path}"))
+                            raise YmAuthError(
+                                "Yard Mastery keeps rejecting the login; reauthentication needed"
+                            )
+                        if (
+                            self._last_login is not None
+                            and self._now() - self._last_login < RELOGIN_COOLDOWN
+                        ):
+                            raise YmAuthError(
+                                "Yard Mastery rejected the token shortly after a login"
+                            )
+                        _LOGGER.debug(
+                            "Token rejected on %s; logging in again", mask(f"{method} {path}")
+                        )
                         await self.login()
-                    status, body = await self._send(method, path, params=params, json_body=json_body, data=data)
+                    status, body = await self._send(
+                        method, path, params=params, json_body=json_body, data=data
+                    )
             if status in _AUTH_STATUSES:
                 self._failed_relogins += 1
                 raise YmAuthError("Yard Mastery rejected a fresh token")
@@ -267,7 +289,9 @@ class YardMasteryClient:
     # ---- writes ----------------------------------------------------------
 
     async def set_item_status(self, item_ids: list[int], status: str) -> Any:
-        return await self.put("/v1/dlux/user-bundle-item/change-status", {"bundleItemIds": item_ids, "status": status})
+        return await self.put(
+            "/v1/dlux/user-bundle-item/change-status", {"bundleItemIds": item_ids, "status": status}
+        )
 
     async def save_journal_entry(self, entry: dict) -> dict:
         return await self.post("/v2/journal/entry", json=entry)
@@ -281,7 +305,9 @@ class YardMasteryClient:
             fd.add_field("file", image, filename=filename, content_type="image/jpeg")
             return fd
 
-        return await self._request("POST", "/v1/journal/entry/image", params={"date": day.isoformat()}, data=form)
+        return await self._request(
+            "POST", "/v1/journal/entry/image", params={"date": day.isoformat()}, data=form
+        )
 
     async def create_reminder(self, reminder: dict) -> dict:
         return await self.post("/v1/reminder", json=reminder)

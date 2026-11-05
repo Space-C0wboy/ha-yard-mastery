@@ -1,4 +1,5 @@
 """Tests for the coordinator: polling tiers, history import, version issue, reauth."""
+
 import copy
 import re
 from datetime import date, timedelta
@@ -96,7 +97,11 @@ async def test_windows_from_several_years_are_merged_by_id(load_entry):
 
 async def test_schema_drift_does_not_fail_a_poll(load_entry):
     entry = await load_entry(
-        seed={"calendar:2026": fixture("calendar_2026"), "calendar:2020": [], "bundle:7": {"id": 7}},
+        seed={
+            "calendar:2026": fixture("calendar_2026"),
+            "calendar:2020": [],
+            "bundle:7": {"id": 7},
+        },
         overrides={"/v1/lawn-segment": {"unexpected": True}, "/v1/soil-test/dashboard": [1, 2]},
     )
     assert entry.runtime_data.last_update_success
@@ -105,7 +110,9 @@ async def test_schema_drift_does_not_fail_a_poll(load_entry):
 
 
 async def test_version_invalid_creates_issue(hass, load_entry):
-    entry = await load_entry(overrides={"/v1/system/version/validate": {"isValid": False, "version": "4.00.05"}})
+    entry = await load_entry(
+        overrides={"/v1/system/version/validate": {"isValid": False, "version": "4.00.05"}}
+    )
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "app_version_invalid")
     assert issue.translation_key == "app_version_invalid"
     assert issue.translation_placeholders == {"version": "4.00.05"}
@@ -130,7 +137,9 @@ async def test_auth_error_starts_reauth(hass, load_entry):
     with patch.object(YardMasteryClient, "soil_temp", side_effect=YmAuthError("nope")):
         entry = await load_entry()
     assert entry.state.name == "SETUP_ERROR"
-    assert any(f["context"]["source"] == "reauth" for f in hass.config_entries.flow.async_progress())
+    assert any(
+        f["context"]["source"] == "reauth" for f in hass.config_entries.flow.async_progress()
+    )
 
 
 async def test_connection_error_is_retried(load_entry):
@@ -189,12 +198,17 @@ async def test_change_made_while_offline_is_logged_after_restart(load_entry):
         calendars={2026: _calendar_with_status(12211687, 29353197, "COMPLETED")},
     )
     changes = _item_changes(entry)
-    assert [(c["key"], c["old"], c["new"]) for c in changes] == [("item:29353197", "CREATED", "COMPLETED")]
+    assert [(c["key"], c["old"], c["new"]) for c in changes] == [
+        ("item:29353197", "CREATED", "COMPLETED")
+    ]
 
 
 async def test_fresh_calendar_status_beats_stale_cached_details(load_entry):
     stale = next(
-        d["bundle"] for y in fixture("calendar_2026")["years"] for d in y["days"] if (d.get("bundle") or {}).get("id") == 12211687
+        d["bundle"]
+        for y in fixture("calendar_2026")["years"]
+        for d in y["days"]
+        if (d.get("bundle") or {}).get("id") == 12211687
     )
     stale = copy.deepcopy(stale)
     for item in stale["bundleItems"]:
@@ -203,7 +217,9 @@ async def test_fresh_calendar_status_beats_stale_cached_details(load_entry):
         seed={"calendar:2026": fixture("calendar_2026"), "bundle:12211687": stale},
         calendars={2026: _calendar_with_status(12211687, 29353197, "COMPLETED")},
     )
-    item = next(i for i in entry.runtime_data.data.snapshot.windows[12211687].items if i.id == 29353197)
+    item = next(
+        i for i in entry.runtime_data.data.snapshot.windows[12211687].items if i.id == 29353197
+    )
     assert (item.status, item.completed, item.rate) == ("COMPLETED", True, 3.0)
     assert [c["new"] for c in _item_changes(entry)] == ["COMPLETED"]
 
@@ -223,7 +239,9 @@ async def test_partial_import_resumes_and_completes(hass, mock_ym, load_entry, f
     assert coordinator.data.last_error is None
     calls = requested(mock_ym)
     assert _count(calls, "date=2026-10-08") == 1
-    assert _count(calls, "date=2026-10-19") == 0  # already stored: only the missing piece is fetched
+    assert (
+        _count(calls, "date=2026-10-19") == 0
+    )  # already stored: only the missing piece is fetched
     assert _count(calls, "startDate=2025-01-01") == 0  # the calendar walk is not repeated
 
 
@@ -276,7 +294,11 @@ async def test_retries_are_capped_per_poll(mock_ym, load_entry, freezer):
     coordinator = entry.runtime_data
     for n in range(6):
         coordinator._failed[f"bundle:{n}"] = (
-            dt_util.utcnow() - timedelta(hours=2), coordinator.client.bundle_details, (n,), "boom", False,
+            dt_util.utcnow() - timedelta(hours=2),
+            coordinator.client.bundle_details,
+            (n,),
+            "boom",
+            False,
         )
     mock_ym.requests.clear()
     freezer.tick(timedelta(minutes=30))
@@ -288,7 +310,11 @@ async def test_failed_key_no_longer_wanted_is_dropped(mock_ym, load_entry, freez
     entry = await load_entry(seed={"calendar:2026": fixture("calendar_2026")})
     coordinator = entry.runtime_data
     coordinator._failed["stilp:GONE"] = (
-        dt_util.utcnow() - timedelta(hours=2), coordinator.client.stilp_products, ("GONE",), "x", False,
+        dt_util.utcnow() - timedelta(hours=2),
+        coordinator.client.stilp_products,
+        ("GONE",),
+        "x",
+        False,
     )
     mock_ym.requests.clear()
     freezer.tick(timedelta(minutes=30))
@@ -299,7 +325,9 @@ async def test_failed_key_no_longer_wanted_is_dropped(mock_ym, load_entry, freez
 
 async def test_version_check_retry_updates_the_issue(hass, mock_ym, load_entry, freezer):
     mock_ym.get(url("/v1/system/version/validate"), status=503)
-    entry = await load_entry(overrides={"/v1/system/version/validate": {"isValid": False, "version": "4.00.05"}})
+    entry = await load_entry(
+        overrides={"/v1/system/version/validate": {"isValid": False, "version": "4.00.05"}}
+    )
     assert ir.async_get(hass).async_get_issue(DOMAIN, "app_version_invalid") is None
     freezer.tick(timedelta(hours=1))
     await entry.runtime_data.async_refresh()
@@ -312,7 +340,9 @@ async def test_journal_template_without_id_is_not_an_entry(load_entry):
     for day in old["years"][0]["days"]:
         if day["date"] == "2026-10-19":
             day.pop("journalEntry")
-    entry = await load_entry(seed={"calendar:2026": old, "journal:2026-10-17": fixture("journal_2026_10_17")})
+    entry = await load_entry(
+        seed={"calendar:2026": old, "journal:2026-10-17": fixture("journal_2026_10_17")}
+    )
     journal = entry.runtime_data.data.snapshot.journal
     assert sorted(day.isoformat() for day in journal) == ["2026-10-08", "2026-10-19"]
     added = [c["key"] for c in entry.runtime_data.store.history if c.get("kind") == "journal_added"]
@@ -339,7 +369,10 @@ def _journal_entry(day: str) -> dict:
 async def test_journal_entry_deleted_in_the_app_leaves_ha(load_entry):
     # The import stored journal:2026-10-08; the app then deleted that entry, so the calendar drops it.
     entry = await load_entry(
-        seed={"calendar:2026": fixture("calendar_2026"), "journal:2026-10-08": _journal_entry("2026-10-08")},
+        seed={
+            "calendar:2026": fixture("calendar_2026"),
+            "journal:2026-10-08": _journal_entry("2026-10-08"),
+        },
         calendars={2026: _calendar_without("2026-10-08")},
     )
     coordinator = entry.runtime_data
@@ -353,14 +386,18 @@ async def test_auth_error_on_an_optional_fetch_is_not_reauth(hass, mock_ym, load
     mock_ym.get(url("/v1/journal/entry/activity"), status=403, repeat=True)
     entry = await load_entry(seed={"calendar:2026": fixture("calendar_2026")})
     assert entry.state.name == "LOADED"
-    assert not [f for f in hass.config_entries.flow.async_progress() if f["context"]["source"] == "reauth"]
+    assert not [
+        f for f in hass.config_entries.flow.async_progress() if f["context"]["source"] == "reauth"
+    ]
     coordinator = entry.runtime_data
     assert coordinator.data.last_error
     mock_ym.requests.clear()
     freezer.tick(timedelta(hours=1))
     await coordinator.async_refresh()
     assert coordinator.last_update_success
-    assert _count(requested(mock_ym), "/v1/journal/entry/activity") == 0  # final until the next reference tier
+    assert (
+        _count(requested(mock_ym), "/v1/journal/entry/activity") == 0
+    )  # final until the next reference tier
 
 
 async def test_failed_soil_test_fetch_does_not_leak_the_barcode(mock_ym, load_entry, caplog):

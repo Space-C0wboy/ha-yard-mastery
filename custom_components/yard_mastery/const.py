@@ -1,4 +1,5 @@
 """Constants for Yard Mastery."""
+
 from datetime import timedelta
 
 from homeassistant.const import Platform

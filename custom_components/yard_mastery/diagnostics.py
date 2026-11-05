@@ -1,4 +1,5 @@
 """Diagnostics: the store and coordinator state with personal data redacted."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -69,7 +70,9 @@ def _scrub(data: Any, secrets: list[str]) -> Any:
     return data
 
 
-async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: YmConfigEntry) -> dict[str, Any]:
+async def async_get_config_entry_diagnostics(
+    hass: HomeAssistant, entry: YmConfigEntry
+) -> dict[str, Any]:
     # runtime_data is missing while setup is retrying or failed, which is when diagnostics matter most.
     coordinator = getattr(entry, "runtime_data", None)
     store = coordinator.store if coordinator else None

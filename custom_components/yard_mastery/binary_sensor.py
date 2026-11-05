@@ -1,4 +1,5 @@
 """Yard Mastery binary sensors."""
+
 from __future__ import annotations
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
@@ -50,7 +51,11 @@ class YmAppVersionValid(YmEntity, BinarySensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        return {"version": self.coordinator.config_entry.options.get(CONF_APP_VERSION, DEFAULT_APP_VERSION)}
+        return {
+            "version": self.coordinator.config_entry.options.get(
+                CONF_APP_VERSION, DEFAULT_APP_VERSION
+            )
+        }
 
 
 async def async_setup_entry(
